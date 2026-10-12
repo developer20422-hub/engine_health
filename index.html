@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LUBRISPEC | Precision Engine Oil Degradation & Life Diagnostics</title>
+  <meta name="description"
+    content="Mechanical engineering online platform predicting engine oil remaining useful life (RUL) and replacement intervals using kinematic consistency, optical transparency, and soot spectroscopy.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="nav-header">
+    <div class="container nav-container">
+      <a href="index.html" class="brand-logo" id="brand-logo-link">
+        <div class="logo-icon"><i class="fa-solid fa-oil-well"></i></div>
+        <div>LUBRI<span class="highlight">SPEC</span> <span class="brand-badge">MECH LAB</span></div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#how-it-works" class="nav-link">Theory</a></li>
+        <li><a href="#spectrum" class="nav-link">Visual Spectrum</a></li>
+        <li><a href="#formulas" class="nav-link">Formulation</a></li>
+        <li><a href="calculator.html" class="btn-nav-cta"><i class="fa-solid fa-gauge-high"></i> Launch Diagnostic
+            Lab</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-content">
+          <div class="hero-tag">
+            <i class="fa-solid fa-microchip"></i> Mechanical Engineering R&D Project
+          </div>
+          <h1 class="hero-title">
+            PRECISION <span class="glow-text">ENGINE OIL LIFE</span> & DEGRADATION ANALYZER
+          </h1>
+          <p class="hero-desc">
+            Fed your engine lubricant's physical <strong>kinematic consistency</strong> and <strong>optical
+              transparency</strong> to calculate its Remaining Useful Life (RUL), pinpoint the exact safe service change
+            mileage, and avoid catastrophic engine bearing wear.
+          </p>
+          <div class="hero-actions">
+            <a href="calculator.html" class="btn-primary" id="hero-calc-cta">
+              <i class="fa-solid fa-sliders"></i> Open Calculation Bench
+            </a>
+            <a href="#formulas" class="btn-secondary">
+              <i class="fa-solid fa-square-root-variable"></i> View Formulas
+            </a>
+          </div>
+          <div class="hero-stats">
+            <div class="stat-item">
+              <div class="stat-num">ASTM D445</div>
+              <div class="stat-label">Viscosity Standard</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-num">&plusmn; 2.5%</div>
+              <div class="stat-label">Empirical Precision</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-num">100%</div>
+              <div class="stat-label">Deterministic Math</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Hero HUD Simulator -->
+        <div class="hero-card-hud">
+          <div class="hud-header">
+            <div class="hud-title">
+              <i class="fa-solid fa-eye-dropper"></i> Rapid Optical Transmittance Check
+            </div>
+            <div class="hud-live-indicator">
+              <span class="pulse-dot"></span> LIVE TELEMETRY
+            </div>
+          </div>
+
+          <div class="droplet-simulator">
+            <div class="droplet-chamber">
+              <div class="droplet-liquid" id="hero-droplet"></div>
+            </div>
+            <div class="hud-slider-group">
+              <div class="hud-slider-label">
+                <span>Optical Transparency Index</span>
+                <span class="hud-slider-val" id="hero-trans-val">85% (Clean Honey)</span>
+              </div>
+              <input type="range" id="hero-trans-slider" min="5" max="98" value="85">
+            </div>
+          </div>
+
+          <div class="hud-telemetry-grid">
+            <div class="telemetry-box">
+              <div class="telemetry-label">Projected Health</div>
+              <div class="telemetry-val" id="hero-health-val" style="color: var(--status-optimal);">89%</div>
+            </div>
+            <div class="telemetry-box">
+              <div class="telemetry-label">Recommended Run</div>
+              <div class="telemetry-val" id="hero-run-val">+5,800 km</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works / Engineering Foundation -->
+  <section class="section-wrapper" id="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Tribology & Diagnostics</span>
+        <h2 class="section-title">Dual-Parameter Lubricant Health Assessment</h2>
+        <p class="section-sub">
+          Unlike modern dashboard counters that guess oil wear based purely on odometer intervals, this mechanical
+          system evaluates physical fluid mechanics: how thick it flows and how much light passes through its carbon
+          suspension.
+        </p>
+      </div>
+
+      <div class="cards-grid-3">
+        <div class="feature-card">
+          <div class="card-icon"><i class="fa-solid fa-water"></i></div>
+          <h3>1. Kinematic Consistency (cSt)</h3>
+          <p>
+            Thermal shearing in crankpin journals reduces polymer chain lengths, causing thinning, while severe
+            high-temperature oxidation causes polymerization and heavy sludge. We compare current cSt against factory
+            SAE baseline.
+          </p>
+          <span class="card-formula-chip">Shear Ratio: R_v = &nu;_current / &nu;_nominal</span>
+        </div>
+
+        <div class="feature-card">
+          <div class="card-icon"><i class="fa-solid fa-lightbulb"></i></div>
+          <h3>2. Optical Transparency (%)</h3>
+          <p>
+            Sub-micron carbon soot, nitration byproducts, and metallic blow-by absorb incident photons. Optical
+            transmittance decays following a modified Beer-Lambert exponential function, indicating particulate
+            contamination.
+          </p>
+          <span class="card-formula-chip">Beer-Lambert Decay: T = T_0 &middot; e^(-&alpha; &middot; C_soot)</span>
+        </div>
+
+        <div class="feature-card">
+          <div class="card-icon"><i class="fa-solid fa-chart-line"></i></div>
+          <h3>3. Remaining Useful Life (RUL)</h3>
+          <p>
+            Our formula synthesizes the consistency degradation factor and soot loading with your engine duty cycle
+            (highway vs stop & go) to predict remaining safe kilometers before hydrodynamic boundary friction occurs.
+          </p>
+          <span class="card-formula-chip">RUL_km = D_max &middot; M_duty &middot; [(OHI - 25) / 75]</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mechanic's Visual Spectrum Chart -->
+  <section class="section-wrapper" id="spectrum" style="background: rgba(15, 18, 28, 0.6);">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Workshop Visual Benchmark</span>
+        <h2 class="section-title">The 5-Stage Oil Degradation Spectrum</h2>
+        <p class="section-sub">
+          Quick visual comparison reference for automotive mechanics inspecting dipsticks and oil filter cartridges.
+        </p>
+      </div>
+
+      <div class="spectrum-stages">
+        <div class="stage-card">
+          <div class="stage-swatch swatch-1"></div>
+          <h4 class="stage-title">Fresh Induction</h4>
+          <div class="stage-trans">85% - 100% Transmittance</div>
+          <p class="stage-desc">Golden amber translucent. Full additive package reserve, zero soot suspension, optimal
+            ZDDP wear protection.</p>
+        </div>
+
+        <div class="stage-card">
+          <div class="stage-swatch swatch-2"></div>
+          <h4 class="stage-title">Mid-Life Stable</h4>
+          <div class="stage-trans">60% - 84% Transmittance</div>
+          <p class="stage-desc">Rich caramel brown. Normal thermal coloring; detergent additives actively suspending
+            fine particles.</p>
+        </div>
+
+        <div class="stage-card">
+          <div class="stage-swatch swatch-3"></div>
+          <h4 class="stage-title">Degraded Amber</h4>
+          <div class="stage-trans">35% - 59% Transmittance</div>
+          <p class="stage-desc">Dark roasted brown. Antioxidants partially depleted; viscosity begins shifting due to
+            thermal shear or light thickening.</p>
+        </div>
+
+        <div class="stage-card">
+          <div class="stage-swatch swatch-4"></div>
+          <h4 class="stage-title">Soot Saturated</h4>
+          <div class="stage-trans">15% - 34% Transmittance</div>
+          <p class="stage-desc">Deep black with opaque edges. Common in diesel engines; dispersants reaching saturation
+            point. Change due soon.</p>
+        </div>
+
+        <div class="stage-card">
+          <div class="stage-swatch swatch-5"></div>
+          <h4 class="stage-title">Critical Sludge</h4>
+          <div class="stage-trans">&lt; 15% Transmittance</div>
+          <p class="stage-desc">Pitch black, tarry consistency. Severe risk of ring sticking, filter bypass opening, and
+            journal bearing starvation.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mathematical Formulation Section -->
+  <section class="section-wrapper" id="formulas">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Empirical Formulation</span>
+        <h2 class="section-title">Pure Mathematical Models</h2>
+        <p class="section-sub">
+          No black boxes. The calculations implemented in the diagnostic bench are strictly derived from tribological
+          mechanics and fluid degradation laws.
+        </p>
+      </div>
+
+      <div class="formula-grid">
+        <div class="formula-card">
+          <h4>1. Viscosity Consistency Score (S_visc)</h4>
+          <p>
+            Evaluates deviation of Kinematic Viscosity (&nu;) at 100&deg;C from nominal SAE factory grade. Both
+            excessive thinning (fuel dilution/shear) and thickening (sludge) are penalized exponentially:
+          </p>
+          <div class="formula-math">
+            S_visc = 100 &times; exp(-2.8 &times; |( &nu;_curr / &nu;_0 ) - 1.0|^1.5)
+          </div>
+          <p>
+            Where <code>&nu;_curr</code> is current measured viscosity and <code>&nu;_0</code> is nominal grade
+            centerpoint (e.g. 10.5 cSt for SAE 5W-30).
+          </p>
+        </div>
+
+        <div class="formula-card">
+          <h4>2. Optical Transmittance Score (S_trans)</h4>
+          <p>
+            Translates percentage light transmittance (T%) measured across a 1mm fluid gap into a normalized optical
+            health factor:
+          </p>
+          <div class="formula-math">
+            S_trans = ( T / 100 )^0.75 &times; 100
+          </div>
+          <p>
+            The 0.75 exponent models human visual discernment and non-linear soot particle opacity clustering.
+          </p>
+        </div>
+
+        <div class="formula-card">
+          <h4>3. Composite Oil Health Index (OHI)</h4>
+          <p>
+            A multi-parameter weighted score combining optical soot loading (55%) and hydrodynamic shear consistency
+            (45%):
+          </p>
+          <div class="formula-math">
+            OHI = 0.55 &times; S_trans + 0.45 &times; S_visc
+          </div>
+          <p>
+            If OHI drops below <strong>30%</strong>, immediate lubricant change is mandatory to prevent metal-on-metal
+            hydrodynamic breakdown.
+          </p>
+        </div>
+
+        <div class="formula-card">
+          <h4>4. Duty-Cycle Remaining Useful Life (RUL)</h4>
+          <p>
+            Calculates remaining safe operating distance before reaching the critical wear threshold:
+          </p>
+          <div class="formula-math">
+            RUL_km = max( 0 , D_nominal &times; M_duty &times; [(OHI - 25) / 75] )
+          </div>
+          <p>
+            Where <code>M_duty</code> is the product of Base Oil Factor, Driving Mode Factor, and Engine Type Factor.
+          </p>
+        </div>
+      </div>
+
+      <!-- Call to Action Banner -->
+      <div class="cta-banner">
+        <h2>Ready to Diagnose Your Engine Lubricant?</h2>
+        <p>
+          Enter the calculation workbench to input your current consistency and transparency readings, test real
+          workshop presets, and print a mechanical service report.
+        </p>
+        <a href="calculator.html" class="btn-primary" style="font-size: 1.2rem; padding: 1rem 2.5rem;">
+          <i class="fa-solid fa-wrench"></i> Enter Calculation Lab
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <div style="font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; color: #fff;">
+          LUBRI<span style="color: var(--oil-fresh);">SPEC</span> DIAGNOSTICS
+        </div>
+        <div class="footer-academic-meta" style="margin-top: 0.3rem;">
+          Mechanical Engineering Online Project &bull; Tribology & Fluid Mechanics
+        </div>
+      </div>
+      <div style="text-align: right;">
+        <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem;">
+          Designed with Automotive Dark Workshop Aesthetic
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+
+</html>
