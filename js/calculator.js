@@ -377,12 +377,12 @@ document.addEventListener('DOMContentLoaded', () => {
               {
                 label: 'Projected Oil Health Index (%)',
                 data: curveData,
-                borderColor: '#f59e0b',
-                backgroundColor: 'rgba(245, 158, 11, 0.12)',
+                borderColor: '#ff8800',
+                backgroundColor: 'rgba(255, 136, 0, 0.12)',
                 borderWidth: 3,
                 fill: true,
                 tension: 0.35,
-                pointBackgroundColor: '#f59e0b',
+                pointBackgroundColor: '#ffa600',
                 pointRadius: 3,
                 pointHoverRadius: 6
               },
@@ -403,8 +403,8 @@ document.addEventListener('DOMContentLoaded', () => {
             plugins: {
               legend: {
                 labels: {
-                  color: '#9ca3af',
-                  font: { family: 'JetBrains Mono', size: 11 }
+                  color: '#a1a1aa',
+                  font: { family: 'Space Grotesk', size: 11 }
                 }
               },
               tooltip: {
@@ -418,11 +418,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 title: {
                   display: true,
                   text: `Odometer Run (${unitLabel})`,
-                  color: '#6b7280',
-                  font: { family: 'Plus Jakarta Sans', size: 11 }
+                  color: '#71717a',
+                  font: { family: 'Space Grotesk', size: 11 }
                 },
                 grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                ticks: { color: '#9ca3af', font: { family: 'JetBrains Mono', size: 10 } }
+                ticks: { color: '#a1a1aa', font: { family: 'JetBrains Mono', size: 10 } }
               },
               y: {
                 min: 0,
@@ -430,11 +430,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 title: {
                   display: true,
                   text: 'Oil Health (%)',
-                  color: '#6b7280',
-                  font: { family: 'Plus Jakarta Sans', size: 11 }
+                  color: '#71717a',
+                  font: { family: 'Space Grotesk', size: 11 }
                 },
                 grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                ticks: { color: '#9ca3af', font: { family: 'JetBrains Mono', size: 10 } }
+                ticks: { color: '#a1a1aa', font: { family: 'JetBrains Mono', size: 10 } }
               }
             }
           }
