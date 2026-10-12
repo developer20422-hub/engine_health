@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LUBRI 🞵 SPEC | Predictive Engine Oil Life & Telemetry Matrix</title>
-  <meta name="description" content="Next-generation mechanical engineering platform predicting engine oil remaining useful life (RUL) and service intervals through kinematic shear and optical transmittance spectroscopy.">
+  <title>LUBRI 🞵 SPEC | Predictive Engine Oil Life & Health Calculator</title>
+  <meta name="description" content="Next-generation mechanical engineering platform predicting engine oil remaining useful life (RUL) and service intervals through kinematic shear and optical light penetration.">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -17,12 +17,12 @@
         <span class="brand-text">LUBRI</span>
         <svg class="pinwheel-icon" viewBox="0 0 24 24" fill="none">
           <path d="M12 12L7 2H12L12 12Z" fill="#ffaa00"/>
-          <path d="M12 12L22 7V12L12 12Z" fill="#ff7700"/>
+          <path d="M12 12L22 7V12L12 12Z" fill="#ff6600"/>
           <path d="M12 12L17 22H12L12 12Z" fill="#ffaa00"/>
-          <path d="M12 12L2 17V12L12 12Z" fill="#ff7700"/>
+          <path d="M12 12L2 17V12L12 12Z" fill="#ff6600"/>
         </svg>
         <span class="brand-text">SPEC</span>
-        <span class="brand-badge">TELEMETRY V2</span>
+        <span class="brand-badge">SYSTEM V2</span>
       </a>
 
       <ul class="nav-links">
@@ -48,13 +48,13 @@
         <div class="hero-content">
           <div class="pill-tag-group">
             <span class="pill-tag amber">
-              <i class="fa-solid fa-atom"></i> TRIBOLOGY TELEMETRY
+              <i class="fa-solid fa-atom"></i> OIL HEALTH ANALYSIS
             </span>
             <span class="pill-tag">
-              <i class="fa-solid fa-microchip"></i> ASTM D445
+              <i class="fa-solid fa-droplet"></i> VISCOSITY TEST
             </span>
             <span class="pill-tag">
-              <i class="fa-solid fa-shield-halved"></i> BEER-LAMBERT MATRIX
+              <i class="fa-solid fa-clock"></i> REMAINING LIFE
             </span>
           </div>
 
@@ -73,7 +73,7 @@
           </h1>
 
           <p class="hero-desc">
-            Next-generation fluid mechanics evaluating physical <strong>kinematic consistency</strong> and <strong>optical light transmittance</strong> to forecast Remaining Useful Life (RUL) and prevent journal bearing hydrodynamic breakdown.
+            Next-generation fluid mechanics evaluating physical <strong>kinematic consistency</strong> and <strong>optical light transmittance</strong> to forecast Remaining Useful Life (RUL) and prevent journal bearing breakdown.
           </p>
 
           <div class="hero-actions">
@@ -87,8 +87,8 @@
 
           <div class="hero-stats">
             <div class="stat-item">
-              <div class="stat-num">ASTM D445</div>
-              <div class="stat-label">Shear Standard</div>
+              <div class="stat-num">SAE RATED</div>
+              <div class="stat-label">Viscosity Baseline</div>
             </div>
             <div class="stat-item">
               <div class="stat-num">&plusmn; 2.5%</div>
@@ -110,7 +110,7 @@
                 <i class="fa-solid fa-eye-dropper" style="color: var(--amber-glow);"></i> Optical Transmittance Sensor
               </div>
               <div class="hud-live-indicator">
-                <span class="pulse-dot"></span> TELEMETRY ACTIVE
+                <span class="pulse-dot"></span> LIVE DATA
               </div>
             </div>
 
@@ -128,22 +128,22 @@
               </div>
             </div>
 
-            <div class="hud-telemetry-grid">
-              <div class="telemetry-box">
-                <div class="telemetry-label">Predicted Health</div>
-                <div class="telemetry-val" id="hero-health-val" style="color: var(--status-optimal);">91%</div>
+            <div class="hud-stats-grid">
+              <div class="stat-box">
+                <div class="stat-tag-label">Predicted Health</div>
+                <div class="stat-tag-val" id="hero-health-val" style="color: var(--status-optimal);">91%</div>
               </div>
-              <div class="telemetry-box">
-                <div class="telemetry-label">Safe Run Margin</div>
-                <div class="telemetry-val" id="hero-run-val">+6,600 km</div>
+              <div class="stat-box">
+                <div class="stat-tag-label">Safe Run Margin</div>
+                <div class="stat-tag-val" id="hero-run-val">+6,600 km</div>
               </div>
             </div>
           </div>
 
-          <!-- Floating Orange Telemetry Card (Inspired by reference Botrace 301.254km card) -->
+          <!-- Floating Orange Race Distance Card -->
           <div class="floating-race-card">
             <div class="race-card-tag">
-              <span><i class="fa-solid fa-flag-checkered"></i> RUL MARGIN</span>
+              <span><i class="fa-solid fa-flag-checkered"></i> RUL RANGE</span>
               <span>LIVE</span>
             </div>
             <div class="race-card-metric" id="hero-floating-metric">+6,450km</div>
@@ -156,7 +156,7 @@
     </div>
   </section>
 
-  <!-- Architecture / Foundry Members Style 3-Card Grid -->
+  <!-- Architecture / 3-Card Grid -->
   <section class="section-wrapper" id="architecture">
     <div class="container">
       <div class="section-header">
@@ -184,7 +184,7 @@
         <div class="feature-card">
           <div class="card-icon"><i class="fa-solid fa-water"></i></div>
           <span class="card-role-badge">TRIBOLOGICAL CORE</span>
-          <h3>Kinematic Shear Ratio</h3>
+          <h3>Kinematic Viscosity Ratio</h3>
           <p>
             Thermal shearing in crankpin journals shears down polymer Viscosity Index Improvers, while sustained high-temperature oxidation polymerizes hydrocarbons into sludge. We compare actual cSt against SAE baseline specs.
           </p>
@@ -194,8 +194,8 @@
         <!-- Card 2 -->
         <div class="feature-card">
           <div class="card-icon"><i class="fa-solid fa-lightbulb"></i></div>
-          <span class="card-role-badge">OPTICAL SPECTROMETRY</span>
-          <h3>Beer-Lambert Opacity</h3>
+          <span class="card-role-badge">OPTICAL ANALYSIS</span>
+          <h3>Light Penetration &amp; Soot</h3>
           <p>
             Sub-micron carbon soot, nitration polymers, and blow-by particulates absorb light photons. Optical transmittance decays non-linearly, giving an exact photometric assessment of particulate loading.
           </p>
@@ -205,8 +205,8 @@
         <!-- Card 3 -->
         <div class="feature-card">
           <div class="card-icon"><i class="fa-solid fa-chart-line"></i></div>
-          <span class="card-role-badge">PREDICTIVE CONVOLUTION</span>
-          <h3>Hydrodynamic RUL Model</h3>
+          <span class="card-role-badge">PREDICTIVE MODEL</span>
+          <h3>Remaining Useful Life (RUL)</h3>
           <p>
             Our formula synthesizes consistency deviation and optical soot saturation with base oil chemistry and engine duty cycle to predict remaining kilometers before boundary metal friction occurs.
           </p>
@@ -235,7 +235,7 @@
           <span>SPECTRUM</span>
         </h2>
         <p class="section-sub">
-          The 5 stages of fluid degradation visual reference for dipstick inspection and spectrophotometer calibration.
+          The 5 stages of fluid degradation visual reference for dipstick inspection and fluid condition checks.
         </p>
       </div>
 
@@ -244,7 +244,7 @@
           <div class="stage-swatch swatch-1"></div>
           <h4 class="stage-title">Fresh Induction</h4>
           <div class="stage-trans">85% - 100% Light Transmittance</div>
-          <p class="stage-desc">Translucent golden honey. Full additive reserve, zero soot suspension, optimal ZDDP boundary protection.</p>
+          <p class="stage-desc">Translucent golden honey. Full additive reserve, zero soot suspension, optimal boundary protection.</p>
         </div>
 
         <div class="stage-card">
@@ -283,7 +283,7 @@
     <div class="container">
       <div class="section-header">
         <span class="section-badge">
-          <i class="fa-solid fa-square-root-variable"></i> DETERMINISTIC FORMULAS
+          <i class="fa-solid fa-square-root-variable"></i> FORMULA MODELS
         </span>
         <h2 class="section-title">
           <span>MATHEMATICAL</span>
@@ -330,7 +330,7 @@
         <div class="formula-card">
           <h4>3. Composite Oil Health Index (OHI)</h4>
           <p>
-            Multi-parameter weighted telemetry combining optical soot clarity (45%), kinematic viscosity integrity (40%), and blotter dispersancy (15%):
+            Multi-factor composite scoring combining optical soot clarity (45%), kinematic viscosity integrity (40%), and blotter dispersancy (15%):
           </p>
           <div class="formula-math">
             OHI = 0.45 &times; S_trans + 0.40 &times; S_visc + 0.15 &times; S_blotter
@@ -354,20 +354,20 @@
         </div>
       </div>
 
-      <!-- CTA Banner (Establish Uplink Style) -->
+      <!-- CTA Banner -->
       <div class="cta-banner">
         <h2>
-          <span>ESTABLISH</span>
+          <span>OPEN</span>
           <svg class="pinwheel-icon" style="width: 32px; height: 32px;" viewBox="0 0 24 24" fill="none">
             <path d="M12 12L7 2H12L12 12Z" fill="#ffaa00"/>
             <path d="M12 12L22 7V12L12 12Z" fill="#ff6600"/>
             <path d="M12 12L17 22H12L12 12Z" fill="#ffaa00"/>
             <path d="M12 12L2 17V12L12 12Z" fill="#ff6600"/>
           </svg>
-          <span>TELEMETRY LINK</span>
+          <span>CALCULATION BENCH</span>
         </h2>
         <p>
-          Fed your engine oil consistency and transparency data into our calculation bench to determine exact remaining kilometers, review degradation curves, and print workshop work orders.
+          Feed your engine oil consistency and condition data into our calculation bench to determine exact remaining kilometers, review degradation curves, and print workshop work orders.
         </p>
         <a href="calculator.html" class="btn-primary" style="font-size: 1.05rem; padding: 1rem 2.8rem;">
           <i class="fa-solid fa-bolt"></i> Launch Calculation Bench
@@ -392,7 +392,7 @@
           <span class="brand-text">SPEC</span>
         </div>
         <div class="footer-academic-meta" style="margin-top: 0.4rem;">
-          Mechanical Engineering Online Project &bull; Powertrain Tribology
+          Mechanical Engineering Project &bull; Engine Oil Health Analysis
         </div>
       </div>
       <div style="text-align: right;">
@@ -400,7 +400,7 @@
           GITHUB PAGES STATIC ARCHITECTURE
         </div>
         <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">
-          Inspired by Futuristic Digital Motorsport & Robotics UI
+          Clean &amp; Simple Automotive Health Calculator
         </div>
       </div>
     </div>

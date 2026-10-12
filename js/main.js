@@ -1,5 +1,5 @@
 /**
- * LUBRISPEC - Futuristic Landing Page Interactive Telemetry Script
+ * LUBRISPEC - Futuristic Landing Page Interactive Oil Health Script
  */
 
 document.addEventListener('DOMContentLoaded', () => {

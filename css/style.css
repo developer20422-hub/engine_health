@@ -615,7 +615,8 @@ input[type="range"]::-webkit-slider-thumb:hover {
   transform: scale(1.2);
 }
 
-.hud-telemetry-grid {
+.hud-telemetry-grid,
+.hud-stats-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
@@ -623,7 +624,8 @@ input[type="range"]::-webkit-slider-thumb:hover {
   margin-top: 1rem;
 }
 
-.telemetry-box {
+.telemetry-box,
+.stat-box {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
@@ -631,7 +633,8 @@ input[type="range"]::-webkit-slider-thumb:hover {
   text-align: center;
 }
 
-.telemetry-label {
+.telemetry-label,
+.stat-tag-label {
   font-family: var(--font-heading);
   font-size: 0.72rem;
   color: var(--text-muted);
@@ -639,7 +642,8 @@ input[type="range"]::-webkit-slider-thumb:hover {
   letter-spacing: 1px;
 }
 
-.telemetry-val {
+.telemetry-val,
+.stat-tag-val {
   font-family: var(--font-display);
   font-size: 1.35rem;
   font-weight: 800;

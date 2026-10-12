@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Diagnostic Bench | LUBRI 🞵 SPEC Fluid Telemetry Engine</title>
-  <meta name="description" content="Futuristic fluid mechanics calculation workbench for predicting engine oil consistency, optical transparency, remaining useful life (RUL), and service intervals.">
+  <title>Diagnostic Bench | LUBRI 🞵 SPEC Engine Oil Life Calculator</title>
+  <meta name="description"
+    content="Simple fluid mechanics calculation workbench for predicting engine oil consistency, condition, remaining useful life (RUL), and service intervals.">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
+
 <body>
 
   <!-- Navigation Bar (Sleek Futuristic Motorsport Style) -->
@@ -17,10 +20,10 @@
       <a href="index.html" class="brand-logo">
         <span class="brand-text">LUBRI</span>
         <svg class="pinwheel-icon" viewBox="0 0 24 24" fill="none">
-          <path d="M12 12L7 2H12L12 12Z" fill="#ffaa00"/>
-          <path d="M12 12L22 7V12L12 12Z" fill="#ff6600"/>
-          <path d="M12 12L17 22H12L12 12Z" fill="#ffaa00"/>
-          <path d="M12 12L2 17V12L12 12Z" fill="#ff6600"/>
+          <path d="M12 12L7 2H12L12 12Z" fill="#ffaa00" />
+          <path d="M12 12L22 7V12L12 12Z" fill="#ff6600" />
+          <path d="M12 12L17 22H12L12 12Z" fill="#ffaa00" />
+          <path d="M12 12L2 17V12L12 12Z" fill="#ff6600" />
         </svg>
         <span class="brand-text">SPEC</span>
         <span class="brand-badge">BENCH V2</span>
@@ -43,37 +46,38 @@
 
   <!-- Lab Workspace Container -->
   <main class="container" style="padding-top: 2rem; padding-bottom: 4.5rem;">
-    
+
     <!-- Top Header & Workshop Presets -->
     <div class="lab-header-panel">
       <div class="lab-title-row">
         <div>
           <div class="pill-tag-group" style="margin-bottom: 0.8rem;">
-            <span class="pill-tag amber"><i class="fa-solid fa-bolt"></i> TELEMETRY ONLINE</span>
-            <span class="pill-tag">ASTM D445 STANDARD</span>
-            <span class="pill-tag">BEER-LAMBERT MATRIX</span>
+            <span class="pill-tag amber"><i class="fa-solid fa-circle-check"></i> READY</span>
+            <span class="pill-tag">OIL ANALYSIS</span>
+            <span class="pill-tag">LIFE ESTIMATOR</span>
           </div>
 
           <h1 class="lab-main-title">
             <span>DIAGNOSTIC</span>
             <svg class="pinwheel-icon" style="width: 32px; height: 32px;" viewBox="0 0 24 24" fill="none">
-              <path d="M12 12L7 2H12L12 12Z" fill="#ffaa00"/>
-              <path d="M12 12L22 7V12L12 12Z" fill="#ff6600"/>
-              <path d="M12 12L17 22H12L12 12Z" fill="#ffaa00"/>
-              <path d="M12 12L2 17V12L12 12Z" fill="#ff6600"/>
+              <path d="M12 12L7 2H12L12 12Z" fill="#ffaa00" />
+              <path d="M12 12L22 7V12L12 12Z" fill="#ff6600" />
+              <path d="M12 12L17 22H12L12 12Z" fill="#ffaa00" />
+              <path d="M12 12L2 17V12L12 12Z" fill="#ff6600" />
             </svg>
             <span class="glow-amber">BENCH</span>
           </h1>
 
           <p style="color: var(--text-secondary); font-size: 0.95rem; margin-top: 0.35rem;">
-            Feed kinematic viscosity and optical light transmittance spectroscopy to compute Remaining Useful Life (RUL).
+            Enter oil consistency and condition to calculate how long your engine oil will run and when to change it.
           </p>
         </div>
 
         <!-- Quick Presets for Mechanics -->
         <div>
-          <span style="font-family: var(--font-heading); font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1.2px;">
-            <i class="fa-solid fa-bolt" style="color: var(--amber-glow);"></i> Rapid Telemetry Presets:
+          <span
+            style="font-family: var(--font-heading); font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1.2px;">
+            <i class="fa-solid fa-bolt" style="color: var(--amber-glow);"></i> Quick Presets:
           </span>
           <div class="preset-selector-group">
             <button class="preset-btn active" id="preset-fresh" data-preset="fresh">Fresh Synthetic</button>
@@ -88,26 +92,26 @@
 
     <!-- Dual Column Workbench Layout -->
     <div class="workbench-layout">
-      
-      <!-- LEFT COLUMN: Physical & Operational Inputs (Establish Uplink Style) -->
+
+      <!-- LEFT COLUMN: Physical & Operational Inputs -->
       <section class="bench-panel" aria-label="Diagnostic Inputs">
         <div class="panel-header-bar">
           <h2 class="panel-title">
-            <i class="fa-solid fa-sliders" style="color: var(--amber-glow);"></i> Telemetry Uplink
+            <i class="fa-solid fa-sliders" style="color: var(--amber-glow);"></i> Input Data
           </h2>
-          <span class="panel-sub">ASTM D445 &bull; Optical Spectrometry</span>
+          <span class="panel-sub">Oil Consistency &amp; Condition</span>
         </div>
 
         <form id="oil-calc-form" onsubmit="event.preventDefault();">
-          
+
           <!-- Input 1: Viscosity Grade & Consistency -->
           <div class="input-section-card">
             <div class="input-header-row">
-              <label for="viscosity-slider" class="input-label">1. Kinematic Viscosity (&nu;)</label>
+              <label for="viscosity-slider" class="input-label">1. Oil Consistency &amp; Viscosity (&nu;)</label>
               <span class="input-current-val" id="disp-viscosity-val">10.5 cSt</span>
             </div>
             <div class="input-subtext">
-              Fluid kinematic flow resistance measured at 100&deg;C. Evaluated against baseline SAE envelope.
+              Fluid flow resistance measured at 100&deg;C. Evaluated against baseline SAE grade.
             </div>
 
             <div class="form-row-2" style="margin-bottom: 1.1rem;">
@@ -125,7 +129,9 @@
 
               <div class="field-group">
                 <label class="field-label">Viscosity Deviation</label>
-                <div style="font-family: var(--font-mono); font-size: 0.95rem; font-weight: 700; padding: 0.65rem 0.85rem; background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-xs);" id="disp-visc-deviation">
+                <div
+                  style="font-family: var(--font-mono); font-size: 0.95rem; font-weight: 700; padding: 0.65rem 0.85rem; background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-xs);"
+                  id="disp-visc-deviation">
                   &plusmn;0.0% (Nominal)
                 </div>
               </div>
@@ -133,82 +139,57 @@
 
             <input type="range" id="viscosity-slider" min="4.0" max="25.0" step="0.1" value="10.5">
 
-            <div style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); margin-top: 0.45rem;">
-              <span>4.0 cSt (Severe Shear)</span>
+            <div
+              style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); margin-top: 0.45rem;">
+              <span>4.0 cSt (Watery / Sheared)</span>
               <span>10.5 cSt (Target)</span>
-              <span>25.0 cSt (Oxidized Sludge)</span>
+              <span>25.0 cSt (Thick Sludge)</span>
             </div>
           </div>
 
-          <!-- Input 2: Optical Transparency -->
+          <!-- Input 2: Blotter Spot Test -->
           <div class="input-section-card">
             <div class="input-header-row">
-              <label for="transparency-slider" class="input-label">2. Optical Transmittance (T)</label>
-              <span class="input-current-val" id="disp-transparency-val">90%</span>
-            </div>
-            <div class="input-subtext">
-              Light penetration (1mm path). Degrades logarithmically as sub-micron carbon soot suspends.
-            </div>
-
-            <input type="range" id="transparency-slider" min="5" max="98" step="1" value="90">
-
-            <div style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); margin-top: 0.45rem;">
-              <span>5% (Pitch Black Soot)</span>
-              <span>50% (Aged Amber)</span>
-              <span>98% (Pure Honey)</span>
-            </div>
-
-            <div class="droplet-visual-strip">
-              <div class="mini-droplet" id="mini-droplet-swatch"></div>
-              <div class="droplet-metric-meta">
-                <div>Optical Sensor: <b id="disp-optical-status" style="color: var(--status-optimal);">Clear / Translucent</b></div>
-                <div>Calculated Carbon Soot: <b id="disp-soot-pct">0.12% wt</b></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Input 3: Blotter Spot Test -->
-          <div class="input-section-card">
-            <div class="input-header-row">
-              <label class="input-label">3. Blotter Spot Chromatography</label>
+              <label class="input-label">2. Oil Condition &amp; Spot Test</label>
               <span class="input-current-val" id="disp-blotter-label" style="font-size: 0.88rem;">Uniform Ring</span>
             </div>
             <div class="input-subtext">
-              Paper ring diffusion pattern reflecting residual detergent & dispersant suspension reserve.
+              Paper drop test pattern reflecting oil transparency, soot loading, and additive dispersancy.
             </div>
 
             <div class="blotter-options-grid" id="blotter-group">
-              <div class="blotter-card-option active" data-score="100" data-name="Uniform Ring (Clean)">
+              <div class="blotter-card-option active" data-score="100" data-name="Uniform Ring (Clean Gold)">
                 <div class="blotter-graphic blot-1"></div>
                 <span class="blotter-label">Stage 1: Clean</span>
               </div>
-              <div class="blotter-card-option" data-score="75" data-name="Diffuse Core (Good)">
+              <div class="blotter-card-option" data-score="75" data-name="Diffuse Core (Good Amber)">
                 <div class="blotter-graphic blot-2"></div>
                 <span class="blotter-label">Stage 2: Good</span>
               </div>
-              <div class="blotter-card-option" data-score="45" data-name="Coagulated Core (Aged)">
+              <div class="blotter-card-option" data-score="45" data-name="Coagulated Core (Aged Dark)">
                 <div class="blotter-graphic blot-3"></div>
                 <span class="blotter-label">Stage 3: Marginal</span>
               </div>
-              <div class="blotter-card-option" data-score="15" data-name="Dense Sludge Center (Depleted)">
+              <div class="blotter-card-option" data-score="15" data-name="Dense Sludge Center (Black Sludge)">
                 <div class="blotter-graphic blot-4"></div>
                 <span class="blotter-label">Stage 4: Depleted</span>
               </div>
             </div>
           </div>
 
-          <!-- Input 4: Operating Parameters -->
+          <!-- Input 3: Operating Parameters -->
           <div class="input-section-card">
             <div class="input-header-row">
-              <label class="input-label">4. Powertrain Operational Data</label>
-              <span class="input-current-val" style="font-size: 0.82rem; color: var(--text-secondary);">Operating Telemetry</span>
+              <label class="input-label">3. Vehicle &amp; Driving Data</label>
+              <span class="input-current-val" style="font-size: 0.82rem; color: var(--text-secondary);">Vehicle Specs</span>
             </div>
 
             <div class="form-row-2">
               <div class="field-group">
-                <label for="current-mileage" class="field-label">Current Odometer Run</label>
+                <label for="current-mileage" class="field-label">Current Run Distance</label>
                 <div style="display: flex; gap: 0.5rem;">
-                  <input type="number" id="current-mileage" class="input-number" value="3200" min="0" max="60000" step="100">
+                  <input type="number" id="current-mileage" class="input-number" value="3200" min="0" max="60000"
+                    step="100">
                   <select id="unit-toggle" class="select-custom" style="width: 80px; flex-shrink: 0;">
                     <option value="km" selected>km</option>
                     <option value="mi">mi</option>
@@ -217,7 +198,7 @@
               </div>
 
               <div class="field-group">
-                <label for="oil-base-type" class="field-label">Base Oil Formulation</label>
+                <label for="oil-base-type" class="field-label">Base Oil Type</label>
                 <select id="oil-base-type" class="select-custom">
                   <option value="mineral" data-factor="1.0">Conventional Mineral (1.0x)</option>
                   <option value="semi" data-factor="1.3">Semi-Synthetic (1.3x)</option>
@@ -232,17 +213,17 @@
                 <label for="engine-type" class="field-label">Engine Architecture</label>
                 <select id="engine-type" class="select-custom">
                   <option value="na-petrol" data-factor="1.0" selected>Naturally Aspirated Petrol</option>
-                  <option value="turbo-petrol" data-factor="0.92">Turbocharged Petrol (GDI)</option>
-                  <option value="diesel" data-factor="0.82">Direct-Injection Turbo Diesel</option>
+                  <option value="turbo-petrol" data-factor="0.92">Turbocharged Petrol</option>
+                  <option value="diesel" data-factor="0.82">Turbo Diesel</option>
                 </select>
               </div>
 
               <div class="field-group">
-                <label for="duty-cycle" class="field-label">Duty Cycle Stress</label>
+                <label for="duty-cycle" class="field-label">Driving Conditions</label>
                 <select id="duty-cycle" class="select-custom">
                   <option value="highway" data-factor="1.2">Highway Cruise (Low Stress)</option>
-                  <option value="mixed" data-factor="1.0" selected>Normal Mixed Cycle</option>
-                  <option value="severe" data-factor="0.75">Severe / Stop-and-Go / Towing</option>
+                  <option value="mixed" data-factor="1.0" selected>Normal Mixed Driving</option>
+                  <option value="severe" data-factor="0.75">Severe / Stop-and-Go / Heavy Load</option>
                 </select>
               </div>
             </div>
@@ -264,7 +245,7 @@
       <section class="bench-panel" aria-label="Diagnostic Outputs">
         <div class="panel-header-bar">
           <h2 class="panel-title">
-            <i class="fa-solid fa-microchip" style="color: var(--amber-glow);"></i> Telemetry Output
+            <i class="fa-solid fa-chart-pie" style="color: var(--amber-glow);"></i> Calculation Results
           </h2>
           <span class="panel-sub" id="disp-calc-timestamp">LIVE CALCULATION</span>
         </div>
@@ -290,7 +271,7 @@
               +6,450 <span class="metric-unit" id="disp-rul-unit">km</span>
             </div>
             <p class="kpi-sub-text" id="disp-service-urgency">
-              Safe operating envelope. Additives active; hydrodynamic lubrication fully maintained.
+              Safe operating envelope. Additives active; lubrication film fully maintained.
             </p>
           </div>
         </div>
@@ -314,8 +295,9 @@
         <!-- Dynamic Degradation Trajectory Chart -->
         <div class="chart-panel-box">
           <div class="chart-header-row">
-            <span class="chart-title"><i class="fa-solid fa-chart-area" style="color: var(--amber-glow);"></i> Degradation Trajectory</span>
-            <span class="chart-legend-badge">Critical Cutoff: 30% OHI</span>
+            <span class="chart-title"><i class="fa-solid fa-chart-area" style="color: var(--amber-glow);"></i>
+              Degradation Trajectory</span>
+            <span class="chart-legend-badge">Change Cutoff: 30% Health</span>
           </div>
           <div class="chart-canvas-wrapper" id="chart-wrapper">
             <canvas id="degradationChart"></canvas>
@@ -327,7 +309,7 @@
         <div class="factors-breakdown">
           <div class="factor-item">
             <div class="factor-label-row">
-              <span>Kinematic Viscosity Consistency (S_visc)</span>
+              <span>Kinematic Viscosity Consistency</span>
               <strong id="disp-factor-visc">96%</strong>
             </div>
             <div class="factor-bar-bg">
@@ -337,17 +319,17 @@
 
           <div class="factor-item">
             <div class="factor-label-row">
-              <span>Optical Transmittance & Clarity (S_trans)</span>
-              <strong id="disp-factor-trans">92%</strong>
+              <span>Oil Condition &amp; Clarity</span>
+              <strong id="disp-factor-trans">95%</strong>
             </div>
             <div class="factor-bar-bg">
-              <div class="factor-bar-fill fill-trans" id="bar-factor-trans" style="width: 92%;"></div>
+              <div class="factor-bar-fill fill-trans" id="bar-factor-trans" style="width: 95%;"></div>
             </div>
           </div>
 
           <div class="factor-item">
             <div class="factor-label-row">
-              <span>Dispersancy & Additive Reserve</span>
+              <span>Dispersancy &amp; Additive Reserve</span>
               <strong id="disp-factor-blotter">95%</strong>
             </div>
             <div class="factor-bar-bg">
@@ -359,16 +341,17 @@
         <!-- Mechanic's Action Advisory Card -->
         <div class="mechanic-report-box" id="mechanic-advisory-box">
           <div class="report-header">
-            <i class="fa-solid fa-wrench"></i> AI Tribologist Advisory
+            <i class="fa-solid fa-wrench"></i> Service Recommendations
           </div>
           <div class="report-text" id="disp-mechanic-text">
-            Lubricant film thickness is optimal. Viscosity is within nominal SAE 5W-30 specs. Optical transmittance shows minimal soot concentration. No oil or filter replacement needed at this interval.
+            Lubricant film thickness is optimal. Viscosity is within nominal SAE 5W-30 specs. Spot test shows clean fluid base. No oil or filter replacement needed at this interval.
           </div>
         </div>
 
         <div style="display: flex; justify-content: flex-end;">
-          <button type="button" class="preset-btn" id="btn-copy-summary" style="display: inline-flex; align-items: center; gap: 0.5rem;">
-            <i class="fa-solid fa-copy"></i> Copy Telemetry Summary
+          <button type="button" class="preset-btn" id="btn-copy-summary"
+            style="display: inline-flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-copy"></i> Copy Diagnostic Summary
           </button>
         </div>
 
@@ -384,15 +367,15 @@
         <div class="brand-logo" style="font-size: 1.15rem;">
           <span class="brand-text">LUBRI</span>
           <svg class="pinwheel-icon" style="width: 18px; height: 18px;" viewBox="0 0 24 24" fill="none">
-            <path d="M12 12L7 2H12L12 12Z" fill="#ffaa00"/>
-            <path d="M12 12L22 7V12L12 12Z" fill="#ff6600"/>
-            <path d="M12 12L17 22H12L12 12Z" fill="#ffaa00"/>
-            <path d="M12 12L2 17V12L12 12Z" fill="#ff6600"/>
+            <path d="M12 12L7 2H12L12 12Z" fill="#ffaa00" />
+            <path d="M12 12L22 7V12L12 12Z" fill="#ff6600" />
+            <path d="M12 12L17 22H12L12 12Z" fill="#ffaa00" />
+            <path d="M12 12L2 17V12L12 12Z" fill="#ff6600" />
           </svg>
           <span class="brand-text">SPEC</span>
         </div>
         <div class="footer-academic-meta" style="margin-top: 0.4rem;">
-          Pure Tribological Formulation &bull; Zero Guesswork &bull; GitHub Pages Static Architecture
+          Mechanical Engineering Project &bull; Engine Oil Health Analysis
         </div>
       </div>
       <div style="text-align: right;">
@@ -405,4 +388,5 @@
 
   <script src="js/calculator.js"></script>
 </body>
+
 </html>
