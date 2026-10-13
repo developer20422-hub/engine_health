@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fleet Dashboard | LUBRI 🞵 SPEC 30-Day Oil Analytics</title>
+  <meta name="description"
+    content="Fleet management and 30-day oil condition records dashboard. Hover over any vehicle record to inspect full tribological breakdown.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+
+<body style="min-height: 100vh; display: flex; flex-direction: column;">
+
+  <!-- Top Navigation Header -->
+  <header class="nav-header">
+    <div class="container nav-container">
+      <a href="index.html" class="brand-logo">
+        <span class="brand-text">LUBRI</span>
+        <svg class="pinwheel-icon" viewBox="0 0 24 24" fill="none">
+          <path d="M12 12L7 2H12L12 12Z" fill="#ffaa00" />
+          <path d="M12 12L22 7V12L12 12Z" fill="#ff6600" />
+          <path d="M12 12L17 22H12L12 12Z" fill="#ffaa00" />
+          <path d="M12 12L2 17V12L12 12Z" fill="#ff6600" />
+        </svg>
+        <span class="brand-text">SPEC</span>
+        <span class="brand-badge">FLEET HUB</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="dashboard.html" class="nav-link active"><i class="fa-solid fa-chart-line"></i> Dashboard</a></li>
+        <li><a href="#records-section" class="nav-link"><i class="fa-solid fa-table-list"></i> Records</a></li>
+        <li><a href="calculator.html" class="nav-link"><i class="fa-solid fa-calculator"></i> Diagnostic Bench</a></li>
+        <li><a href="index.html" class="nav-link"><i class="fa-solid fa-house"></i> Home</a></li>
+      </ul>
+
+      <!-- User Profile & Actions -->
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <div class="user-profile-badge">
+          <div class="user-avatar"><i class="fa-solid fa-user-gear"></i></div>
+          <div>
+            <div style="font-family: var(--font-display); font-size: 0.88rem; font-weight: 700; color: #fff;" id="logged-user-name">user01</div>
+            <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--amber-glow);">MASTER MECHANIC</div>
+          </div>
+        </div>
+
+        <button id="btn-logout" class="btn-logout-pill" title="Logout session">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Dashboard Container -->
+  <main class="container" style="flex: 1; padding-top: 2rem; padding-bottom: 4rem;">
+    
+    <!-- Dashboard Top Header Bar -->
+    <div class="dash-header-row">
+      <div>
+        <div class="pill-tag amber" style="margin-bottom: 0.6rem;">
+          <i class="fa-solid fa-calendar-days"></i> 30-DAY GENERATION REPORT
+        </div>
+        <h1 style="font-size: 2.2rem; letter-spacing: 1.5px; text-transform: uppercase;">
+          <span>FLEET</span>
+          <svg class="pinwheel-icon" style="width: 28px; height: 28px;" viewBox="0 0 24 24" fill="none">
+            <path d="M12 12L7 2H12L12 12Z" fill="#ffaa00" />
+            <path d="M12 12L22 7V12L12 12Z" fill="#ff6600" />
+            <path d="M12 12L17 22H12L12 12Z" fill="#ffaa00" />
+            <path d="M12 12L2 17V12L12 12Z" fill="#ff6600" />
+          </svg>
+          <span class="glow-amber">INTELLIGENCE</span>
+        </h1>
+        <p style="color: var(--text-secondary); font-size: 0.95rem; margin-top: 0.35rem;">
+          Real-time monitoring of all vehicle engine oil inspections and remaining useful life (RUL) generated over the last 30 days.
+        </p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display: flex; gap: 0.85rem; align-items: center; flex-wrap: wrap;">
+        <button id="btn-export-csv" class="btn-secondary" style="padding: 0.75rem 1.4rem; font-size: 0.85rem;">
+          <i class="fa-solid fa-file-arrow-down"></i> Export 30-Day CSV
+        </button>
+        <a href="calculator.html" class="btn-primary" style="padding: 0.75rem 1.6rem; font-size: 0.88rem;">
+          <i class="fa-solid fa-plus"></i> New Oil Inspection
+        </a>
+      </div>
+    </div>
+
+    <!-- 30-Day Metric Summary Cards -->
+    <section class="dash-metrics-grid" aria-label="30-day generation summary">
+      
+      <!-- Card 1: Total Generated -->
+      <div class="metric-hud-card">
+        <div class="metric-hud-header">
+          <span class="metric-hud-title">30-Day Inspections</span>
+          <div class="metric-hud-icon icon-amber"><i class="fa-solid fa-oil-well"></i></div>
+        </div>
+        <div class="metric-hud-value" id="kpi-total-tests">148</div>
+        <div class="metric-hud-sub">
+          <span class="trend-badge positive"><i class="fa-solid fa-arrow-trend-up"></i> +18%</span>
+          <span>vs previous month</span>
+        </div>
+      </div>
+
+      <!-- Card 2: Optimal Vehicles -->
+      <div class="metric-hud-card">
+        <div class="metric-hud-header">
+          <span class="metric-hud-title">Optimal Condition</span>
+          <div class="metric-hud-icon icon-green"><i class="fa-solid fa-circle-check"></i></div>
+        </div>
+        <div class="metric-hud-value" id="kpi-optimal-tests" style="color: var(--status-optimal);">96</div>
+        <div class="metric-hud-sub">
+          <span style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--status-optimal);">64.9% of fleet</span>
+          <span>Safe running</span>
+        </div>
+      </div>
+
+      <!-- Card 3: Service Due Soon -->
+      <div class="metric-hud-card">
+        <div class="metric-hud-header">
+          <span class="metric-hud-title">Service Due Soon</span>
+          <div class="metric-hud-icon icon-orange"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        </div>
+        <div class="metric-hud-value" id="kpi-warning-tests" style="color: var(--amber-glow);">38</div>
+        <div class="metric-hud-sub">
+          <span style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--amber-glow);">25.7% of fleet</span>
+          <span>Within next 1,200 km</span>
+        </div>
+      </div>
+
+      <!-- Card 4: Critical Sludge -->
+      <div class="metric-hud-card">
+        <div class="metric-hud-header">
+          <span class="metric-hud-title">Critical Sludge Alert</span>
+          <div class="metric-hud-icon icon-red"><i class="fa-solid fa-skull-crossbones"></i></div>
+        </div>
+        <div class="metric-hud-value" id="kpi-critical-tests" style="color: var(--status-critical);">14</div>
+        <div class="metric-hud-sub">
+          <span class="trend-badge critical"><i class="fa-solid fa-triangle-exclamation"></i> Immediate Flush</span>
+          <span>Crankcase danger</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- 30-Day Activity Charts Section -->
+    <section class="dash-charts-grid" aria-label="30-day analytics charts">
+      
+      <!-- Chart 1: 30-Day Test Generation Activity Volume -->
+      <div class="bench-panel" style="padding: 1.5rem;">
+        <div class="panel-header-bar" style="margin-bottom: 1rem; padding-bottom: 0.75rem;">
+          <h3 class="panel-title" style="font-size: 1.05rem;">
+            <i class="fa-solid fa-chart-area" style="color: var(--amber-glow);"></i> 30-Day Inspection Generation Activity
+          </h3>
+          <span class="panel-sub">Daily Test Volumes</span>
+        </div>
+        <div style="height: 240px; position: relative;">
+          <canvas id="generationChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 2: Fleet Oil Health Distribution -->
+      <div class="bench-panel" style="padding: 1.5rem;">
+        <div class="panel-header-bar" style="margin-bottom: 1rem; padding-bottom: 0.75rem;">
+          <h3 class="panel-title" style="font-size: 1.05rem;">
+            <i class="fa-solid fa-chart-pie" style="color: var(--amber-glow);"></i> Fleet Health Condition Distribution
+          </h3>
+          <span class="panel-sub">Current Breakdown</span>
+        </div>
+        <div style="height: 240px; position: relative; display: flex; align-items: center; justify-content: center;">
+          <canvas id="distributionChart"></canvas>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Records & Hover Inspection Section -->
+    <section id="records-section" style="margin-top: 2.5rem;">
+      
+      <!-- Section Header & Filter Toolbar -->
+      <div class="records-toolbar-wrap">
+        <div>
+          <h2 style="font-size: 1.6rem; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 0.5rem;">
+            <span>VEHICLE</span>
+            <svg class="pinwheel-icon" style="width: 20px; height: 20px;" viewBox="0 0 24 24" fill="none">
+              <path d="M12 12L7 2H12L12 12Z" fill="#ffaa00" />
+              <path d="M12 12L22 7V12L12 12Z" fill="#ff6600" />
+              <path d="M12 12L17 22H12L12 12Z" fill="#ffaa00" />
+              <path d="M12 12L2 17V12L12 12Z" fill="#ff6600" />
+            </svg>
+            <span class="glow-amber">INSPECTION RECORDS</span>
+          </h2>
+          <span style="font-size: 0.85rem; color: var(--text-muted);">
+            <i class="fa-solid fa-hand-pointer" style="color: var(--amber-glow);"></i> <strong>Hover over any row</strong> to inspect live tribological breakdown.
+          </span>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="filter-controls-group">
+          
+          <!-- Search input -->
+          <div class="search-input-wrap">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="record-search" class="search-input" placeholder="Search Vehicle Plate, Type, Grade...">
+          </div>
+
+          <!-- Status Filter Tabs -->
+          <div class="tab-pills-group">
+            <button class="filter-pill active" data-filter="all">All (<span id="count-all">148</span>)</button>
+            <button class="filter-pill" data-filter="optimal">Optimal (<span id="count-opt">96</span>)</button>
+            <button class="filter-pill" data-filter="warning">Due (<span id="count-warn">38</span>)</button>
+            <button class="filter-pill" data-filter="critical">Critical (<span id="count-crit">14</span>)</button>
+          </div>
+
+          <!-- Vehicle Type Filter -->
+          <select id="type-filter" class="select-custom" style="width: 170px; padding: 0.5rem 0.8rem; font-size: 0.8rem;">
+            <option value="all" selected>All Vehicle Types</option>
+            <option value="Commercial Heavy Truck">Commercial Truck</option>
+            <option value="SUV / 4x4">SUV / 4x4</option>
+            <option value="Sedan / Hatchback">Sedan / Hatchback</option>
+            <option value="Fleet Delivery Van">Fleet Van</option>
+            <option value="Motorcycle">Motorcycle</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Main Records Grid Layout: Table on Left + Sticky Hover Inspector on Right -->
+      <div class="records-layout-split">
+        
+        <!-- Left: Interactive Vehicle Records Table -->
+        <div class="records-table-container">
+          <table class="hud-table" id="records-table">
+            <thead>
+              <tr>
+                <th>Vehicle Plate</th>
+                <th>Type</th>
+                <th>Inspection Date</th>
+                <th>Oil Grade</th>
+                <th>Oil Health</th>
+                <th>Remaining Run</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="records-tbody">
+              <!-- Dynamically populated by js/dashboard.js -->
+            </tbody>
+          </table>
+          <div id="no-records-msg" style="display: none; padding: 3rem; text-align: center; color: var(--text-muted);">
+            <i class="fa-solid fa-magnifying-glass" style="font-size: 2rem; margin-bottom: 0.8rem; display: block; color: var(--amber-glow);"></i>
+            No vehicle records found matching your filter.
+          </div>
+        </div>
+
+        <!-- Right: Real-time Hover Inspector Card (reveals details upon hovering any record) -->
+        <aside class="hover-inspector-sidebar" id="hover-inspector-panel">
+          
+          <div class="inspector-card-header">
+            <div style="display: flex; align-items: center; gap: 0.6rem;">
+              <div class="pulse-dot"></div>
+              <span style="font-family: var(--font-heading); font-size: 0.82rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--amber-glow);">
+                LIVE RECORD INSPECTOR
+              </span>
+            </div>
+            <span style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted);">HOVER TO INSPECT</span>
+          </div>
+
+          <!-- Inspector Content -->
+          <div id="inspector-content">
+            
+            <!-- Vehicle Plate Big Header -->
+            <div style="margin: 1.25rem 0 1rem; text-align: center;">
+              <div class="vehicle-plate-big" id="inspect-plate">MH-12-AB-9821</div>
+              <div class="vehicle-type-label" id="inspect-type">
+                <i class="fa-solid fa-truck" id="inspect-type-icon"></i> <span id="inspect-type-text">Commercial Heavy Truck</span>
+              </div>
+            </div>
+
+            <!-- Health Gauge Circular Preview -->
+            <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 1.2rem; text-align: center; margin-bottom: 1.2rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                <span style="font-family: var(--font-heading); font-size: 0.78rem; text-transform: uppercase; color: var(--text-muted);">Oil Health Index</span>
+                <span class="status-badge optimal" id="inspect-status-badge">OPTIMAL CONDITION</span>
+              </div>
+              <div style="font-family: var(--font-display); font-size: 2.5rem; font-weight: 900; color: #fff;" id="inspect-ohi">88%</div>
+              <div style="font-size: 0.82rem; color: var(--text-secondary);" id="inspect-rul-text">Safe Remaining: <strong style="color: #fff;" id="inspect-rul">+6,450 km</strong></div>
+            </div>
+
+            <!-- Detailed Tribological Breakdown -->
+            <div class="inspector-specs-grid">
+              
+              <div class="spec-tile">
+                <div class="spec-label">Measured Viscosity</div>
+                <div class="spec-val" id="inspect-visc">14.2 cSt</div>
+                <div class="spec-sub" id="inspect-visc-dev">&plusmn;0.0% (SAE 15W-40)</div>
+              </div>
+
+              <div class="spec-tile">
+                <div class="spec-label">Condition &amp; Spot</div>
+                <div class="spec-val" id="inspect-condition" style="font-size: 0.95rem;">Clean Uniform</div>
+                <div class="spec-sub" id="inspect-soot">Soot: 0.12% wt</div>
+              </div>
+
+              <div class="spec-tile">
+                <div class="spec-label">Current Odometer</div>
+                <div class="spec-val" id="inspect-odometer">18,500 km</div>
+                <div class="spec-sub" id="inspect-change-odo">Change at: 24,950 km</div>
+              </div>
+
+              <div class="spec-tile">
+                <div class="spec-label">Base Chemistry</div>
+                <div class="spec-val" id="inspect-base">Semi-Synthetic</div>
+                <div class="spec-sub" id="inspect-duty">Heavy Load Cycle</div>
+              </div>
+
+            </div>
+
+            <!-- Advisory Note Box -->
+            <div class="inspector-advisory-box">
+              <div style="font-family: var(--font-heading); font-size: 0.78rem; font-weight: 700; color: var(--amber-glow); text-transform: uppercase; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.4rem;">
+                <i class="fa-solid fa-wrench"></i> Service Recommendation
+              </div>
+              <div style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5;" id="inspect-advisory">
+                Viscosity envelope is within target specs. No filter bypass pressure detected. Vehicle is cleared for scheduled operations.
+              </div>
+            </div>
+
+            <!-- Inspector Quick Actions -->
+            <div style="margin-top: 1.25rem; display: flex; gap: 0.75rem;">
+              <button type="button" class="btn-primary" id="btn-inspect-open-calc" style="flex: 1; padding: 0.7rem; font-size: 0.82rem; justify-content: center;">
+                <i class="fa-solid fa-sliders"></i> Open in Bench
+              </button>
+              <button type="button" class="btn-secondary" id="btn-inspect-print" style="padding: 0.7rem 1rem; font-size: 0.82rem;">
+                <i class="fa-solid fa-print"></i>
+              </button>
+            </div>
+
+          </div>
+        </aside>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <div class="brand-logo" style="font-size: 1.15rem;">
+          <span class="brand-text">LUBRI</span>
+          <svg class="pinwheel-icon" style="width: 18px; height: 18px;" viewBox="0 0 24 24" fill="none">
+            <path d="M12 12L7 2H12L12 12Z" fill="#ffaa00" />
+            <path d="M12 12L22 7V12L12 12Z" fill="#ff6600" />
+            <path d="M12 12L17 22H12L12 12Z" fill="#ffaa00" />
+            <path d="M12 12L2 17V12L12 12Z" fill="#ff6600" />
+          </svg>
+          <span class="brand-text">SPEC</span>
+        </div>
+        <div class="footer-academic-meta" style="margin-top: 0.4rem;">
+          Fleet Oil Analytics &bull; 30-Day Inspection Generation Dashboard &bull; GitHub Pages Static
+        </div>
+      </div>
+      <div style="text-align: right;">
+        <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--amber-glow);">
+          LOGGED IN: user01
+        </span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/dashboard.js"></script>
+</body>
+
+</html>

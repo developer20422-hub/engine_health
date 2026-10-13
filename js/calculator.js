@@ -566,6 +566,122 @@ Summary: ${dispMechanicText ? dispMechanicText.innerText.replace(/\s+/g, ' ').tr
     });
   });
 
+  // Save Inspection to Dashboard Handler
+  const btnSaveRecord = document.getElementById('btn-save-record');
+  const vehiclePlateInput = document.getElementById('vehicle-plate-input');
+  const vehicleTypeSelect = document.getElementById('vehicle-type-select');
+  const saveToast = document.getElementById('save-toast');
+
+  // Check for prefill data passed from Dashboard
+  const prefillPlate = sessionStorage.getItem('prefill_vehicle_plate');
+  if (prefillPlate && vehiclePlateInput) {
+    vehiclePlateInput.value = prefillPlate;
+    sessionStorage.removeItem('prefill_vehicle_plate');
+  }
+  const prefillType = sessionStorage.getItem('prefill_vehicle_type');
+  if (prefillType && vehicleTypeSelect) {
+    vehicleTypeSelect.value = prefillType;
+    sessionStorage.removeItem('prefill_vehicle_type');
+  }
+  const prefillVisc = sessionStorage.getItem('prefill_visc');
+  if (prefillVisc && viscSlider) {
+    viscSlider.value = prefillVisc;
+    sessionStorage.removeItem('prefill_visc');
+  }
+  const prefillGrade = sessionStorage.getItem('prefill_grade');
+  if (prefillGrade && saeSelect) {
+    saeSelect.value = prefillGrade;
+    sessionStorage.removeItem('prefill_grade');
+  }
+  const prefillOdo = sessionStorage.getItem('prefill_odometer');
+  if (prefillOdo && mileageInput) {
+    mileageInput.value = prefillOdo;
+    sessionStorage.removeItem('prefill_odometer');
+  }
+
+  // Type to Icon mapper
+  function getIconForVehicleType(typeStr) {
+    if (!typeStr) return 'fa-car';
+    if (typeStr.includes('Truck')) return 'fa-truck';
+    if (typeStr.includes('SUV')) return 'fa-car-side';
+    if (typeStr.includes('Van')) return 'fa-van-shuttle';
+    if (typeStr.includes('Motorcycle')) return 'fa-motorcycle';
+    return 'fa-car';
+  }
+
+  btnSaveRecord?.addEventListener('click', () => {
+    const plate = vehiclePlateInput ? vehiclePlateInput.value.trim() : 'MH-12-DEMO';
+    const type = vehicleTypeSelect ? vehicleTypeSelect.value : 'Commercial Heavy Truck';
+    const ohiVal = parseInt(dispOhiPercent.textContent) || 85;
+    const rulVal = parseInt(dispRulDistance.textContent.replace(/[^0-9]/g, '')) || 0;
+    const changeVal = parseInt(dispChangeOdo.textContent.replace(/[^0-9]/g, '')) || 0;
+    const currentOdo = parseFloat(mileageInput.value) || 0;
+
+    let status = 'optimal';
+    let statusText = 'OPTIMAL CONDITION';
+    if (ohiVal < 35) {
+      status = 'critical';
+      statusText = 'CRITICAL / FLUSH NOW';
+    } else if (ohiVal < 55) {
+      status = 'warning';
+      statusText = 'SERVICE DUE SOON';
+    }
+
+    const newRecord = {
+      id: "REC-" + Math.floor(1050 + Math.random() * 900),
+      plate: plate || 'MH-12-UNKNOWN',
+      type: type,
+      typeIcon: getIconForVehicleType(type),
+      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      daysAgo: 0,
+      grade: saeSelect.value,
+      visc: parseFloat(viscSlider.value),
+      viscDev: dispViscDev ? dispViscDev.textContent : '0.0%',
+      condition: dispBlotterLabel ? dispBlotterLabel.textContent : 'Uniform Ring',
+      soot: dispSootPct ? dispSootPct.textContent : '0.12% wt',
+      odometer: currentOdo,
+      base: oilBaseSelect.selectedOptions[0]?.text.split('(')[0].trim() || 'Synthetic',
+      duty: dutyCycleSelect.selectedOptions[0]?.text.split('(')[0].trim() || 'Mixed',
+      ohi: ohiVal,
+      rulKm: rulVal,
+      changeOdo: changeVal,
+      status: status,
+      statusText: statusText,
+      advisory: dispMechanicText ? dispMechanicText.innerText.trim() : 'Routine service recommendation.'
+    };
+
+    // Save into localStorage
+    let stored = [];
+    try {
+      const raw = localStorage.getItem('lubri_records');
+      if (raw) stored = JSON.parse(raw);
+    } catch (e) {
+      stored = [];
+    }
+    if (!Array.isArray(stored)) stored = [];
+    stored.unshift(newRecord);
+    localStorage.setItem('lubri_records', JSON.stringify(stored));
+
+    // Display Toast notification
+    if (saveToast) {
+      saveToast.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+          <div>
+            <i class="fa-solid fa-circle-check" style="color: var(--status-optimal); margin-right: 0.5rem;"></i>
+            <strong>Vehicle ${plate}</strong> saved to 30-Day Fleet Dashboard!
+          </div>
+          <a href="dashboard.html" class="btn-demo-pill" style="text-decoration: none;">
+            View in Dashboard &rarr;
+          </a>
+        </div>
+      `;
+      saveToast.style.display = 'block';
+      setTimeout(() => {
+        saveToast.style.display = 'none';
+      }, 5000);
+    }
+  });
+
   // Initial Calculation Run on Page Load
   calculateDiagnostics();
 });
