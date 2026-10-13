@@ -242,7 +242,6 @@
                 <th>Oil Health</th>
                 <th>Remaining Run</th>
                 <th>Status</th>
-                <th style="text-align: center;">Live Inspect</th>
               </tr>
             </thead>
             <tbody id="records-tbody">
@@ -265,9 +264,7 @@
                 LIVE RECORD INSPECTOR
               </span>
             </div>
-            <span id="inspector-status-mode" class="live-inspecting-tag">
-              <i class="fa-solid fa-wave-square"></i> HOVER TO INSPECT
-            </span>
+            <span style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted);">HOVER TO INSPECT</span>
           </div>
 
           <!-- Inspector Content -->
@@ -345,53 +342,6 @@
 
       </div>
     </section>
-
-    <!-- Floating Live Record Inspector (Appears immediately adjacent to hovered record) -->
-    <div id="floating-hover-card" class="floating-hover-card" style="display: none;">
-      <div class="fl-header">
-        <div class="fl-plate-wrap">
-          <div class="vehicle-plate-pill">
-            <span class="plate-flag"><i class="fa-solid fa-car"></i></span>
-            <span class="plate-code" id="fl-plate">MH-12-AB-9821</span>
-          </div>
-          <span class="fl-type" id="fl-type"><i class="fa-solid fa-truck"></i> Heavy Truck</span>
-        </div>
-        <span class="status-badge optimal" id="fl-badge">OPTIMAL</span>
-      </div>
-
-      <div class="fl-metrics">
-        <div class="fl-stat">
-          <span class="fl-lbl">Oil Health Index</span>
-          <span class="fl-val" id="fl-health">88%</span>
-        </div>
-        <div class="fl-stat">
-          <span class="fl-lbl">Safe Remaining Run</span>
-          <span class="fl-val" id="fl-rul">+6,450 km</span>
-        </div>
-        <div class="fl-stat">
-          <span class="fl-lbl">Measured Viscosity</span>
-          <span class="fl-val" id="fl-visc">14.2 cSt</span>
-        </div>
-        <div class="fl-stat">
-          <span class="fl-lbl">Soot / Blotter</span>
-          <span class="fl-val" id="fl-soot">0.12% wt</span>
-        </div>
-      </div>
-
-      <div class="fl-advisory">
-        <i class="fa-solid fa-circle-info"></i>
-        <span id="fl-advisory">Viscosity envelope is within target specs...</span>
-      </div>
-
-      <div class="fl-footer">
-        <span style="display: inline-flex; align-items: center; gap: 0.35rem; color: var(--amber-glow);">
-          <i class="fa-solid fa-circle-dot" style="font-size: 0.55rem;"></i> LIVE RECORD INSPECTOR
-        </span>
-        <span style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted);">
-          CLICK ROW TO LOCK
-        </span>
-      </div>
-    </div>
 
   </main>
 

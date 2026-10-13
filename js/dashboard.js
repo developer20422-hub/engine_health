@@ -389,19 +389,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnInspectOpenCalc = document.getElementById('btn-inspect-open-calc');
   const btnInspectPrint = document.getElementById('btn-inspect-print');
 
-  // Floating hover inspector elements
-  const floatingCard = document.getElementById('floating-hover-card');
-  const flPlate = document.getElementById('fl-plate');
-  const flType = document.getElementById('fl-type');
-  const flBadge = document.getElementById('fl-badge');
-  const flHealth = document.getElementById('fl-health');
-  const flRul = document.getElementById('fl-rul');
-  const flVisc = document.getElementById('fl-visc');
-  const flSoot = document.getElementById('fl-soot');
-  const flAdvisory = document.getElementById('fl-advisory');
-  const inspectorPanel = document.getElementById('hover-inspector-panel');
-  const inspectorStatusMode = document.getElementById('inspector-status-mode');
-  let pinnedRecord = null;
+
 
   // Update Summary KPI Counts
   function updateCounts() {
@@ -460,84 +448,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (inspectAdvisory) inspectAdvisory.textContent = record.advisory;
   }
 
-  // Position & Display Floating Hover Inspector Popover
-  function showFloatingInspector(record, e) {
-    if (!floatingCard || !record) return;
 
-    if (flPlate) flPlate.textContent = record.plate;
-    if (flType) {
-      flType.innerHTML = `<i class="fa-solid ${record.typeIcon || 'fa-car'}"></i> ${record.type}`;
-    }
-    if (flBadge) {
-      flBadge.className = `status-badge ${record.status}`;
-      flBadge.textContent = record.status === 'optimal' ? 'OPTIMAL' : (record.status === 'warning' ? 'DUE SOON' : 'CRITICAL');
-    }
-    if (flHealth) flHealth.textContent = `${record.ohi}%`;
-    if (flRul) {
-      flRul.textContent = record.rulKm > 0 ? `+${record.rulKm.toLocaleString()} km` : 'FLUSH NOW';
-      flRul.style.color = record.status === 'critical' ? 'var(--status-critical)' : '#ffffff';
-    }
-    if (flVisc) flVisc.textContent = `${record.visc} cSt (${record.viscDev})`;
-    if (flSoot) flSoot.textContent = `Soot: ${record.soot}`;
-    if (flAdvisory) flAdvisory.textContent = record.advisory;
-
-    positionFloatingInspector(e);
-
-    floatingCard.style.display = 'block';
-    requestAnimationFrame(() => floatingCard.classList.add('visible'));
-
-    // Highlight sidebar live state
-    if (inspectorPanel) inspectorPanel.classList.add('live-hover-active');
-    if (inspectorStatusMode) {
-      inspectorStatusMode.className = 'live-inspecting-tag';
-      inspectorStatusMode.innerHTML = `<i class="fa-solid fa-bolt"></i> INSPECTING: ${record.plate}`;
-    }
-  }
-
-  function positionFloatingInspector(e) {
-    if (!floatingCard) return;
-    const cardWidth = 330;
-    const cardHeight = floatingCard.offsetHeight || 260;
-
-    let left = e.clientX + 20;
-    let top = e.clientY - (cardHeight / 2);
-
-    // If overflowing right viewport, flip to left of cursor
-    if (left + cardWidth > window.innerWidth - 20) {
-      left = e.clientX - cardWidth - 20;
-    }
-    if (left < 15) left = 15;
-
-    // Vertical boundary checks
-    if (top < 75) top = 75;
-    if (top + cardHeight > window.innerHeight - 20) {
-      top = window.innerHeight - cardHeight - 20;
-    }
-
-    floatingCard.style.left = `${left}px`;
-    floatingCard.style.top = `${top}px`;
-  }
-
-  function hideFloatingInspector() {
-    if (!floatingCard) return;
-    floatingCard.classList.remove('visible');
-    setTimeout(() => {
-      if (!floatingCard.classList.contains('visible')) {
-        floatingCard.style.display = 'none';
-      }
-    }, 160);
-
-    if (inspectorPanel) inspectorPanel.classList.remove('live-hover-active');
-    if (inspectorStatusMode) {
-      if (pinnedRecord) {
-        inspectorStatusMode.className = 'live-inspecting-tag pinned';
-        inspectorStatusMode.innerHTML = `<i class="fa-solid fa-thumbtack"></i> PINNED: ${pinnedRecord.plate}`;
-      } else {
-        inspectorStatusMode.className = 'live-inspecting-tag';
-        inspectorStatusMode.innerHTML = `<i class="fa-solid fa-wave-square"></i> HOVER TO INSPECT`;
-      }
-    }
-  }
 
   // Render Table Rows with Hover Handlers
   function renderRecordsTable() {
@@ -617,54 +528,26 @@ document.addEventListener('DOMContentLoaded', () => {
             ${r.status === 'optimal' ? 'OPTIMAL' : (r.status === 'warning' ? 'DUE SOON' : 'CRITICAL')}
           </span>
         </td>
-        <td style="text-align: center;">
-          <div class="hover-inspect-badge" title="Hover to inspect full breakdown">
-            <i class="fa-solid fa-microscope"></i>
-            <span>Inspect</span>
-          </div>
-        </td>
       `;
 
-      // HOVER INTERACTION: Reveal details in BOTH the Floating Popover AND Sidebar Inspector
-      tr.addEventListener('mouseenter', (e) => {
+      // HOVER INTERACTION: Seamlessly update the Live Record Inspector on the right
+      tr.addEventListener('mouseenter', () => {
         document.querySelectorAll('.record-table-row').forEach(row => row.classList.remove('active-hover-row'));
         tr.classList.add('active-hover-row');
         displayRecordInInspector(r);
-        showFloatingInspector(r, e);
       });
 
-      tr.addEventListener('mousemove', (e) => {
-        positionFloatingInspector(e);
-      });
-
-      tr.addEventListener('mouseleave', () => {
-        hideFloatingInspector();
-        if (pinnedRecord) {
-          displayRecordInInspector(pinnedRecord);
-        }
-      });
-
-      // Click PINs/locks the record into the permanent side inspector
+      // Click also sets/focuses it
       tr.addEventListener('click', () => {
-        pinnedRecord = r;
         document.querySelectorAll('.record-table-row').forEach(row => row.classList.remove('active-hover-row'));
         tr.classList.add('active-hover-row');
         displayRecordInInspector(r);
-        if (inspectorStatusMode) {
-          inspectorStatusMode.className = 'live-inspecting-tag pinned';
-          inspectorStatusMode.innerHTML = `<i class="fa-solid fa-thumbtack"></i> PINNED: ${r.plate}`;
-        }
       });
 
       // Highlight first item initially
       if (idx === 0) {
-        pinnedRecord = r;
         tr.classList.add('active-hover-row');
         displayRecordInInspector(r);
-        if (inspectorStatusMode) {
-          inspectorStatusMode.className = 'live-inspecting-tag pinned';
-          inspectorStatusMode.innerHTML = `<i class="fa-solid fa-thumbtack"></i> PINNED: ${r.plate}`;
-        }
       }
 
       tbody.appendChild(tr);
