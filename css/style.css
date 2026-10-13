@@ -3,7 +3,7 @@
    Inspired by High-End Sci-Fi / Digital Racing & Robotics Design Language
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800;900&family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 :root {
   /* Warm Dark Obsidian & Smoky Carbon Palette (from reference design) */
@@ -43,8 +43,9 @@
   --text-amber: #ffa600;
 
   --font-logo: 'Orbitron', sans-serif;
-  --font-display: 'Orbitron', sans-serif;
-  --font-heading: 'Space Grotesk', 'Chakra Petch', sans-serif;
+  --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-number: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-body: 'Space Grotesk', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
@@ -115,9 +116,9 @@ body::before {
 
 /* Typography Defaults */
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-display);
-  letter-spacing: 1.5px;
-  font-weight: 800;
+  font-family: var(--font-heading);
+  letter-spacing: 1.2px;
+  font-weight: 700;
   color: #ffffff;
   line-height: 1.15;
 }
@@ -388,11 +389,13 @@ a {
 }
 
 .stat-item .stat-num {
-  font-family: var(--font-display);
-  font-size: 1.7rem;
-  font-weight: 800;
+  font-family: var(--font-number);
+  font-size: 1.65rem;
+  font-weight: 700;
   color: #ffffff;
-  letter-spacing: 1px;
+  letter-spacing: -0.5px;
+  font-feature-settings: "cv05" 1, "tnum" 1;
+  font-variant-numeric: tabular-nums;
 }
 
 .stat-item .stat-label {
@@ -429,11 +432,13 @@ a {
 }
 
 .race-card-metric {
-  font-family: var(--font-display);
+  font-family: var(--font-number);
   font-size: 2.1rem;
-  font-weight: 900;
+  font-weight: 800;
   line-height: 1;
-  letter-spacing: 0.5px;
+  letter-spacing: -0.5px;
+  font-feature-settings: "cv05" 1, "tnum" 1;
+  font-variant-numeric: tabular-nums;
 }
 
 .race-card-sub {
@@ -644,11 +649,13 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
 .telemetry-val,
 .stat-tag-val {
-  font-family: var(--font-display);
+  font-family: var(--font-number);
   font-size: 1.35rem;
-  font-weight: 800;
+  font-weight: 700;
   margin-top: 0.25rem;
   color: #ffffff;
+  font-feature-settings: "cv05" 1, "tnum" 1;
+  font-variant-numeric: tabular-nums;
 }
 
 /* SECTION HEADINGS WITH PINWHEEL (like FOUNDRY 🞵 MEMBERS) */
@@ -816,7 +823,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
 .stage-title {
   font-size: 0.95rem;
-  font-family: var(--font-display);
+  font-family: var(--font-heading);
   letter-spacing: 0.8px;
   margin-bottom: 0.35rem;
 }
@@ -1012,8 +1019,8 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
 .panel-title {
   font-size: 1.2rem;
-  font-family: var(--font-display);
-  letter-spacing: 1.5px;
+  font-family: var(--font-heading);
+  letter-spacing: 1.2px;
   text-transform: uppercase;
   display: flex;
   align-items: center;
@@ -1244,11 +1251,13 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .gauge-percent {
-  font-family: var(--font-display);
+  font-family: var(--font-number);
   font-size: 2.1rem;
   font-weight: 800;
   line-height: 1;
   color: #ffffff;
+  font-feature-settings: "cv05" 1, "tnum" 1;
+  font-variant-numeric: tabular-nums;
 }
 
 .gauge-sub-caption {
@@ -1302,13 +1311,15 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .kpi-big-metric {
-  font-family: var(--font-display);
-  font-size: 1.9rem;
-  font-weight: 900;
+  font-family: var(--font-number);
+  font-size: 2rem;
+  font-weight: 800;
   color: #ffffff;
   line-height: 1.1;
-  letter-spacing: 0.5px;
+  letter-spacing: -0.5px;
   margin-bottom: 0.3rem;
+  font-feature-settings: "cv05" 1, "tnum" 1;
+  font-variant-numeric: tabular-nums;
 }
 
 .kpi-big-metric span.metric-unit {
@@ -1348,10 +1359,12 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .rul-card-val {
-  font-family: var(--font-display);
+  font-family: var(--font-number);
   font-size: 1.35rem;
-  font-weight: 800;
+  font-weight: 700;
   color: #ffffff;
+  font-feature-settings: "cv05" 1, "tnum" 1;
+  font-variant-numeric: tabular-nums;
 }
 
 /* CHART CONTAINER */
@@ -1796,12 +1809,15 @@ input[type="range"]::-webkit-slider-thumb:hover {
 .icon-red { background: rgba(239, 68, 68, 0.1); color: var(--status-critical); border: 1px solid rgba(239, 68, 68, 0.3); }
 
 .metric-hud-value {
-  font-family: var(--font-display);
+  font-family: var(--font-number);
   font-size: 2.2rem;
-  font-weight: 900;
+  font-weight: 800;
   line-height: 1.1;
   color: #ffffff;
   margin-bottom: 0.4rem;
+  letter-spacing: -0.5px;
+  font-feature-settings: "cv05" 1, "tnum" 1;
+  font-variant-numeric: tabular-nums;
 }
 
 .metric-hud-sub {
@@ -2098,11 +2114,13 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .spec-val {
-  font-family: var(--font-mono);
+  font-family: var(--font-number);
   font-size: 0.95rem;
   font-weight: 700;
   color: #ffffff;
   margin-top: 0.2rem;
+  font-feature-settings: "cv05" 1, "tnum" 1;
+  font-variant-numeric: tabular-nums;
 }
 
 .spec-sub {

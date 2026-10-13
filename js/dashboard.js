@@ -511,11 +511,11 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="mini-progress-ring-bg">
               <div class="mini-progress-fill fill-${r.status}" style="width: ${r.ohi}%;"></div>
             </div>
-            <strong style="font-family: var(--font-display); font-size: 0.95rem; color: #fff;">${r.ohi}%</strong>
+            <strong style="font-family: var(--font-number); font-size: 0.95rem; color: #fff; font-feature-settings: 'tnum' 1;">${r.ohi}%</strong>
           </div>
         </td>
         <td>
-          <span style="font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; color: ${r.status === 'critical' ? 'var(--status-critical)' : '#fff'};">
+          <span style="font-family: var(--font-number); font-size: 0.95rem; font-weight: 700; color: ${r.status === 'critical' ? 'var(--status-critical)' : '#fff'}; font-feature-settings: 'tnum' 1;">
             ${r.rulKm > 0 ? `+${r.rulKm.toLocaleString()} km` : 'FLUSH NOW'}
           </span>
         </td>
