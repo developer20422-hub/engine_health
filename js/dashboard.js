@@ -631,6 +631,47 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // New Inspection Action Dropdown Controller
+  const inspectionDropdownWrap = document.getElementById('inspection-dropdown-wrap');
+  const btnNewInspection = document.getElementById('btn-new-inspection');
+  const optBulkExport = document.getElementById('opt-bulk-export');
+
+  if (btnNewInspection && inspectionDropdownWrap) {
+    btnNewInspection.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = inspectionDropdownWrap.classList.toggle('open');
+      btnNewInspection.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+
+    // Bulk export option: inert as requested ("don't do anything for the bulk export")
+    if (optBulkExport) {
+      optBulkExport.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        // Do nothing, cleanly dismiss dropdown
+        inspectionDropdownWrap.classList.remove('open');
+        btnNewInspection.setAttribute('aria-expanded', 'false');
+      });
+    }
+
+    // Dismiss dropdown on outside click
+    document.addEventListener('click', (e) => {
+      if (!inspectionDropdownWrap.contains(e.target)) {
+        inspectionDropdownWrap.classList.remove('open');
+        btnNewInspection.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // Dismiss dropdown on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && inspectionDropdownWrap.classList.contains('open')) {
+        inspectionDropdownWrap.classList.remove('open');
+        btnNewInspection.setAttribute('aria-expanded', 'false');
+        btnNewInspection.focus();
+      }
+    });
+  }
+
   // Render 30-Day Inspection Generation Activity Chart
   function renderGenerationChart() {
     const ctx = document.getElementById('generationChart');

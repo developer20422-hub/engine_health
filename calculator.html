@@ -7,7 +7,8 @@
   <title>Diagnostic Bench | LUBRI 🞵 SPEC Engine Oil Life Calculator</title>
   <meta name="description"
     content="Simple fluid mechanics calculation workbench for predicting engine oil consistency, condition, remaining useful life (RUL), and service intervals.">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 12L7 2H12L12 12Z' fill='%23ffaa00'/><path d='M12 12L22 7V12L12 12Z' fill='%23ff6600'/><path d='M12 12L17 22H12L12 12Z' fill='%23ffaa00'/><path d='M12 12L2 17V12L12 12Z' fill='%23ff6600'/></svg>">
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 12L7 2H12L12 12Z' fill='%23ffaa00'/><path d='M12 12L22 7V12L12 12Z' fill='%23ff6600'/><path d='M12 12L17 22H12L12 12Z' fill='%23ffaa00'/><path d='M12 12L2 17V12L12 12Z' fill='%23ff6600'/></svg>">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -33,7 +34,8 @@
       <ul class="nav-links">
         <li><a href="index.html" class="nav-link"><i class="fa-solid fa-arrow-left"></i> Home</a></li>
         <li><a href="dashboard.html" class="nav-link"><i class="fa-solid fa-chart-line"></i> Dashboard</a></li>
-        <li><a href="calculator.html" class="nav-link active"><i class="fa-solid fa-calculator"></i> Diagnostic Bench</a></li>
+        <li><a href="calculator.html" class="nav-link active"><i class="fa-solid fa-calculator"></i> Diagnostic
+            Bench</a></li>
         <li><a href="index.html#formulas" class="nav-link">Formulas</a></li>
       </ul>
 
@@ -181,21 +183,25 @@
           <div class="input-section-card">
             <div class="input-header-row">
               <label class="input-label">3. Vehicle &amp; Driving Data</label>
-              <span class="input-current-val" style="font-size: 0.82rem; color: var(--text-secondary);">Vehicle Specs</span>
+              <span class="input-current-val" style="font-size: 0.82rem; color: var(--text-secondary);">Vehicle
+                Specs</span>
             </div>
 
             <!-- Vehicle Identification (Requested Fields) -->
             <div class="form-row-2" style="margin-bottom: 1rem;">
               <div class="field-group">
                 <label for="vehicle-plate-input" class="field-label">
-                  <i class="fa-solid fa-id-card" style="color: var(--amber-glow); margin-right: 0.3rem;"></i> Vehicle Number Plate
+                  <i class="fa-solid fa-id-card" style="color: var(--amber-glow); margin-right: 0.3rem;"></i> Vehicle
+                  Number Plate
                 </label>
-                <input type="text" id="vehicle-plate-input" class="input-custom" placeholder="e.g. MH-12-AB-9821" value="MH-12-AB-9821">
+                <input type="text" id="vehicle-plate-input" class="input-custom" placeholder="e.g. MH-12-AB-9821"
+                  value="MH-12-AB-9821">
               </div>
 
               <div class="field-group">
                 <label for="vehicle-type-select" class="field-label">
-                  <i class="fa-solid fa-car" style="color: var(--amber-glow); margin-right: 0.3rem;"></i> Vehicle Category / Type
+                  <i class="fa-solid fa-car" style="color: var(--amber-glow); margin-right: 0.3rem;"></i> Vehicle
+                  Category / Type
                 </label>
                 <select id="vehicle-type-select" class="select-custom">
                   <option value="Commercial Heavy Truck" selected>Commercial Heavy Truck</option>
@@ -255,7 +261,8 @@
 
           <!-- Bottom Actions -->
           <div class="bench-action-buttons">
-            <button type="button" class="btn-primary" id="btn-save-record" style="font-size: 0.88rem; padding: 0.85rem;">
+            <button type="button" class="btn-primary" id="btn-save-record"
+              style="font-size: 0.88rem; padding: 0.85rem;">
               <i class="fa-solid fa-floppy-disk"></i> Save to Dashboard
             </button>
             <button type="button" class="btn-print" id="btn-print-order">
@@ -404,7 +411,7 @@
           <span class="brand-text">SPEC</span>
         </div>
         <div class="footer-academic-meta" style="margin-top: 0.4rem;">
-          Mechanical Engineering Project &bull; Engine Oil Health Analysis
+          ML-based Project &bull; Engine Oil Health Analysis
         </div>
       </div>
       <div style="text-align: right;">
