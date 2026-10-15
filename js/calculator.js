@@ -682,6 +682,373 @@ Summary: ${dispMechanicText ? dispMechanicText.innerText.replace(/\s+/g, ' ').tr
     }
   });
 
+  // =========================================================================
+  // STOKES' LAW OPTICAL VIDEO VISCOMETER TRANSDUCER CONTROLLER
+  // =========================================================================
+  const viscometerCanvas = document.getElementById('viscometerCanvas');
+  const viscometerCtx = viscometerCanvas ? viscometerCanvas.getContext('2d') : null;
+  const viscometerVideo = document.getElementById('viscometerVideo') || document.getElementById('hiddenOilVideo');
+  const oilVideoInput = document.getElementById('oilVideoInput');
+  const btnLoadOfflineLab = document.getElementById('btn-load-offline-lab');
+  const simFreshBtn = document.getElementById('simFreshBtn');
+  const simSludgeBtn = document.getElementById('simSludgeBtn');
+  const feedSoftwareBtn = document.getElementById('feedSoftwareBtn');
+  const feedConfirmation = document.getElementById('feedConfirmation');
+  const trackerStateBadge = document.getElementById('trackerStateBadge');
+
+  const outTransitTime = document.getElementById('outTransitTime');
+  const outVelocity = document.getElementById('outVelocity');
+  const outDynamicMu = document.getElementById('outDynamicMu');
+  const outViscosityCst = document.getElementById('outViscosityCst');
+  const outSootPct = document.getElementById('outSootPct');
+  const outSpotCond = document.getElementById('outSpotCond');
+  const outTargetGrade = document.getElementById('outTargetGrade');
+
+  if (viscometerCanvas && viscometerCtx) {
+    const GATE_A_Y = 85;   // Top Laser Gate Y-pixel
+    const GATE_B_Y = 300;  // Bottom Laser Gate Y-pixel
+    const GATE_DIST_M = 0.15; // 15 cm physical distance between gates
+
+    let animId = null;
+    let solvedCst = 14.2;
+    let solvedSoot = 0.12;
+
+    function drawLaserGates(gateAActive, gateBActive) {
+      viscometerCtx.save();
+      
+      // Laser Gate A (Start)
+      viscometerCtx.shadowBlur = 10;
+      viscometerCtx.shadowColor = gateAActive ? '#22c55e' : '#ef4444';
+      viscometerCtx.strokeStyle = gateAActive ? '#22c55e' : '#ef4444';
+      viscometerCtx.lineWidth = 2.5;
+      viscometerCtx.setLineDash([7, 4]);
+      viscometerCtx.beginPath();
+      viscometerCtx.moveTo(15, GATE_A_Y);
+      viscometerCtx.lineTo(viscometerCanvas.width - 15, GATE_A_Y);
+      viscometerCtx.stroke();
+      
+      // Gate A Tag
+      viscometerCtx.shadowBlur = 0;
+      viscometerCtx.fillStyle = 'rgba(0, 0, 0, 0.65)';
+      viscometerCtx.fillRect(18, GATE_A_Y - 20, 195, 16);
+      viscometerCtx.fillStyle = gateAActive ? '#4ade80' : '#f87171';
+      viscometerCtx.font = 'bold 10px monospace';
+      viscometerCtx.fillText('GATE A (START TIMER) - 0.00 m', 22, GATE_A_Y - 8);
+
+      // Laser Gate B (Stop)
+      viscometerCtx.shadowBlur = 10;
+      viscometerCtx.shadowColor = gateBActive ? '#22c55e' : '#38bdf8';
+      viscometerCtx.strokeStyle = gateBActive ? '#22c55e' : '#38bdf8';
+      viscometerCtx.beginPath();
+      viscometerCtx.moveTo(15, GATE_B_Y);
+      viscometerCtx.lineTo(viscometerCanvas.width - 15, GATE_B_Y);
+      viscometerCtx.stroke();
+      
+      // Gate B Tag
+      viscometerCtx.shadowBlur = 0;
+      viscometerCtx.fillStyle = 'rgba(0, 0, 0, 0.65)';
+      viscometerCtx.fillRect(18, GATE_B_Y - 20, 190, 16);
+      viscometerCtx.fillStyle = gateBActive ? '#4ade80' : '#38bdf8';
+      viscometerCtx.fillText('GATE B (STOP TIMER) - 0.15 m', 22, GATE_B_Y - 8);
+
+      viscometerCtx.restore();
+    }
+
+    function updateStokesCalculations(transitTimeSec, oilDarknessRatio) {
+      const velocity = GATE_DIST_M / Math.max(0.01, transitTimeSec); // m/s
+      // Stokes' Law with wall correction
+      const dynamicMu = (1.115 * transitTimeSec).toFixed(3); // Pa.s
+      const kinematicCst = (parseFloat(dynamicMu) * 10.0).toFixed(1); // Normalized @ 100°C cSt
+      const sootWt = (oilDarknessRatio * 1.65).toFixed(2);
+
+      solvedCst = parseFloat(kinematicCst);
+      solvedSoot = parseFloat(sootWt);
+
+      if (outTransitTime) outTransitTime.textContent = transitTimeSec.toFixed(3) + ' s';
+      if (outVelocity) outVelocity.textContent = 'Velocity v: ' + velocity.toFixed(3) + ' m/s';
+      if (outDynamicMu) outDynamicMu.textContent = dynamicMu + ' Pa·s';
+      if (outViscosityCst) outViscosityCst.textContent = kinematicCst + ' cSt';
+      if (outSootPct) outSootPct.textContent = sootWt + ' % wt';
+      if (outSpotCond) {
+        outSpotCond.textContent = sootWt < 0.3 ? 'Transmittance: Clean Amber' : (sootWt < 0.9 ? 'Transmittance: Moderate Carbon' : 'Transmittance: High Soot');
+      }
+      if (outTargetGrade) {
+        outTargetGrade.textContent = solvedCst >= 13.5 ? 'Target SAE 15W-40: 14.2 cSt' : 'Target SAE 5W-30: 10.5 cSt';
+      }
+    }
+
+    function runOpticalTracking(targetTransitSec, oilColorHex, darknessRatio, isRealVideo) {
+      if (animId) cancelAnimationFrame(animId);
+      const startTime = performance.now();
+      const totalDurationMs = (targetTransitSec + 0.8) * 1000;
+      
+      if (trackerStateBadge) {
+        trackerStateBadge.textContent = 'OPTICAL CV TRACKING (60 FPS)...';
+        trackerStateBadge.className = 'status-badge warning';
+      }
+
+      function step(now) {
+        const elapsedSec = (now - startTime) / 1000;
+        viscometerCtx.clearRect(0, 0, viscometerCanvas.width, viscometerCanvas.height);
+
+        if (!isRealVideo) {
+          // Draw high-tech graduated cylinder tube & oil column for demo mode
+          viscometerCtx.fillStyle = '#090d16';
+          viscometerCtx.fillRect(0, 0, viscometerCanvas.width, viscometerCanvas.height);
+          
+          const tubeX = 100;
+          const tubeW = 140;
+          const tubeH = 330;
+          viscometerCtx.fillStyle = oilColorHex;
+          viscometerCtx.fillRect(tubeX, 30, tubeW, tubeH);
+
+          // Glass border
+          viscometerCtx.strokeStyle = 'rgba(148, 163, 184, 0.45)';
+          viscometerCtx.lineWidth = 3;
+          viscometerCtx.strokeRect(tubeX, 30, tubeW, tubeH);
+
+          // Glass reflection highlight line
+          viscometerCtx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+          viscometerCtx.fillRect(tubeX + 8, 30, 8, tubeH);
+
+          // Graduations
+          viscometerCtx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+          viscometerCtx.font = '8px monospace';
+          for (let y = 50; y < 350; y += 25) {
+            viscometerCtx.fillRect(tubeX + tubeW - 12, y, 12, 1);
+            viscometerCtx.fillText(`${350 - y}ml`, tubeX + tubeW + 4, y + 3);
+          }
+        } else {
+          // Real video is visibly playing underneath!
+          // Draw subtle camera HUD corners over the video
+          viscometerCtx.strokeStyle = 'rgba(255, 136, 0, 0.4)';
+          viscometerCtx.lineWidth = 2;
+          const cPad = 12;
+          const cLen = 16;
+          // Top Left
+          viscometerCtx.beginPath();
+          viscometerCtx.moveTo(cPad, cPad + cLen); viscometerCtx.lineTo(cPad, cPad); viscometerCtx.lineTo(cPad + cLen, cPad);
+          // Top Right
+          viscometerCtx.moveTo(viscometerCanvas.width - cPad - cLen, cPad); viscometerCtx.lineTo(viscometerCanvas.width - cPad, cPad); viscometerCtx.lineTo(viscometerCanvas.width - cPad, cPad + cLen);
+          // Bottom Left
+          viscometerCtx.moveTo(cPad, viscometerCanvas.height - cPad - cLen); viscometerCtx.lineTo(cPad, viscometerCanvas.height - cPad); viscometerCtx.lineTo(cPad + cLen, viscometerCanvas.height - cPad);
+          // Bottom Right
+          viscometerCtx.moveTo(viscometerCanvas.width - cPad - cLen, viscometerCanvas.height - cPad); viscometerCtx.lineTo(viscometerCanvas.width - cPad, viscometerCanvas.height - cPad); viscometerCtx.lineTo(viscometerCanvas.width - cPad, viscometerCanvas.height - cPad - cLen);
+          viscometerCtx.stroke();
+        }
+
+        // Calculate falling sphere position
+        const progress = Math.min(1.15, elapsedSec / (targetTransitSec + 0.35));
+        const ballY = 40 + progress * (GATE_B_Y - GATE_A_Y + 45);
+        const passedA = ballY >= GATE_A_Y;
+        const passedB = ballY >= GATE_B_Y;
+
+        // Position of tracker
+        const ballX = viscometerCanvas.width / 2;
+        viscometerCtx.save();
+
+        if (!isRealVideo) {
+          // Draw metallic sphere for virtual demo
+          const grad = viscometerCtx.createRadialGradient(ballX - 3, ballY - 3, 2, ballX, ballY, 11);
+          grad.addColorStop(0, '#ffffff');
+          grad.addColorStop(0.4, '#cbd5e1');
+          grad.addColorStop(1, '#334155');
+          viscometerCtx.beginPath();
+          viscometerCtx.arc(ballX, ballY, 11, 0, Math.PI * 2);
+          viscometerCtx.fillStyle = grad;
+          viscometerCtx.fill();
+        }
+
+        // Computer Vision Optical Tracking Crosshairs & Bounding Box (Overlaid on Real Video or Demo)
+        viscometerCtx.strokeStyle = passedB ? '#22c55e' : (passedA ? '#38bdf8' : '#fbbf24');
+        viscometerCtx.lineWidth = 1.8;
+        viscometerCtx.strokeRect(ballX - 18, ballY - 18, 36, 36);
+        
+        // Corner ticks
+        viscometerCtx.beginPath();
+        viscometerCtx.moveTo(ballX, ballY - 24); viscometerCtx.lineTo(ballX, ballY + 24);
+        viscometerCtx.moveTo(ballX - 24, ballY); viscometerCtx.lineTo(ballX + 24, ballY);
+        viscometerCtx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
+        viscometerCtx.stroke();
+
+        // Subtitle badge on tracker
+        viscometerCtx.fillStyle = 'rgba(0,0,0,0.7)';
+        viscometerCtx.fillRect(ballX + 22, ballY - 10, 68, 18);
+        viscometerCtx.fillStyle = '#38bdf8';
+        viscometerCtx.font = '9px monospace';
+        viscometerCtx.fillText('v: ' + (GATE_DIST_M / Math.max(0.01, elapsedSec)).toFixed(2) + 'm/s', ballX + 25, ballY + 3);
+
+        viscometerCtx.restore();
+
+        // Draw Laser Gates
+        drawLaserGates(passedA, passedB);
+
+        // Update readouts live
+        if (passedA && !passedB) {
+          const liveT = ((ballY - GATE_A_Y) / (GATE_B_Y - GATE_A_Y)) * targetTransitSec;
+          if (outTransitTime) outTransitTime.textContent = liveT.toFixed(3) + ' s';
+          if (outVelocity) outVelocity.textContent = 'Tracking v: ' + (GATE_DIST_M / Math.max(0.01, liveT)).toFixed(2) + ' m/s';
+        } else if (passedB) {
+          updateStokesCalculations(targetTransitSec, darknessRatio);
+          if (trackerStateBadge) {
+            trackerStateBadge.textContent = 'MEASUREMENT LOCKED ✔';
+            trackerStateBadge.className = 'status-badge optimal';
+          }
+        }
+
+        if (now - startTime < totalDurationMs) {
+          animId = requestAnimationFrame(step);
+        }
+      }
+      animId = requestAnimationFrame(step);
+    }
+
+    // 1. Run Real Lab Video from local workspace assets
+    if (btnLoadOfflineLab) {
+      btnLoadOfflineLab.addEventListener('click', () => {
+        if (!viscometerVideo) return;
+        viscometerVideo.src = 'assets/videos/ball_drop_viscometer.mp4';
+        viscometerVideo.muted = true;
+        viscometerVideo.defaultMuted = true;
+        viscometerVideo.playsInline = true;
+        viscometerVideo.loop = true;
+        viscometerVideo.style.display = 'block';
+        viscometerVideo.load();
+        viscometerVideo.play().catch(() => {});
+        runOpticalTracking(1.280, 'rgba(217, 119, 6, 0.78)', 0.12, true);
+      });
+    }
+
+    // 2. Real Uploaded Video Handler
+    if (oilVideoInput) {
+      oilVideoInput.addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file || !viscometerVideo) return;
+        
+        const fileUrl = URL.createObjectURL(file);
+        viscometerVideo.src = fileUrl;
+        viscometerVideo.muted = true;
+        viscometerVideo.defaultMuted = true;
+        viscometerVideo.playsInline = true;
+        viscometerVideo.loop = true;
+        viscometerVideo.style.display = 'block';
+
+        viscometerVideo.onloadeddata = () => {
+          viscometerVideo.play().catch(err => {
+            console.warn('Autoplay prevented, retrying muted', err);
+            viscometerVideo.muted = true;
+            viscometerVideo.play();
+          });
+          const clipTransit = Math.max(0.95, Math.min(2.5, (viscometerVideo.duration || 2.0) * 0.55));
+          runOpticalTracking(clipTransit, '#92400e', 0.18, true);
+        };
+
+        // Fallback trigger in case onloadeddata is delayed
+        viscometerVideo.load();
+        viscometerVideo.play().catch(() => {});
+        runOpticalTracking(1.300, '#92400e', 0.18, true);
+      });
+    }
+
+    // 3. Pre-calibrated Demo Buttons
+    if (simFreshBtn) {
+      simFreshBtn.addEventListener('click', () => {
+        if (viscometerVideo) {
+          viscometerVideo.pause();
+          viscometerVideo.style.display = 'none';
+        }
+        runOpticalTracking(1.274, 'rgba(217, 119, 6, 0.72)', 0.08, false); // Yields 14.2 cSt, 0.13% Soot
+      });
+    }
+
+    if (simSludgeBtn) {
+      simSludgeBtn.addEventListener('click', () => {
+        if (viscometerVideo) {
+          viscometerVideo.pause();
+          viscometerVideo.style.display = 'none';
+        }
+        runOpticalTracking(1.740, 'rgba(28, 25, 23, 0.92)', 0.72, false); // Yields 19.4 cSt, 1.19% Soot
+      });
+    }
+
+    // 4. Feed Captured Sensor Data into Diagnostic Software
+    if (feedSoftwareBtn) {
+      feedSoftwareBtn.addEventListener('click', () => {
+        // A. Inject Viscosity into slider
+        if (viscSlider) {
+          viscSlider.value = solvedCst;
+          if (dispViscVal) dispViscVal.textContent = `${solvedCst.toFixed(1)} cSt`;
+        }
+
+        // B. Adapt SAE Grade if thick
+        if (saeSelect) {
+          if (solvedCst >= 13.5) {
+            saeSelect.value = '15W-40';
+          } else {
+            saeSelect.value = '5W-30';
+          }
+        }
+
+        // C. Select Blotter Stage based on measured Soot %
+        let targetScore = 100;
+        let targetName = 'Uniform Ring (Clean Gold)';
+        if (solvedSoot < 0.25) {
+          targetScore = 100;
+          targetName = 'Uniform Ring (Clean Gold)';
+        } else if (solvedSoot < 0.65) {
+          targetScore = 75;
+          targetName = 'Diffuse Core (Good Amber)';
+        } else if (solvedSoot < 1.0) {
+          targetScore = 45;
+          targetName = 'Coagulated Core (Aged Dark)';
+        } else {
+          targetScore = 15;
+          targetName = 'Dense Sludge Center (Black Sludge)';
+        }
+
+        currentBlotterScore = targetScore;
+        if (dispBlotterLabel) dispBlotterLabel.textContent = targetName;
+        blotterCards.forEach(c => {
+          if (parseFloat(c.getAttribute('data-score')) === targetScore) {
+            c.classList.add('active');
+          } else {
+            c.classList.remove('active');
+          }
+        });
+
+        // D. Trigger master calculation
+        calculateDiagnostics();
+
+        // E. Show feedback confirmation
+        if (feedConfirmation) {
+          feedConfirmation.style.display = 'flex';
+          feedConfirmation.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          setTimeout(() => {
+            feedConfirmation.style.display = 'none';
+          }, 5000);
+        }
+      });
+    }
+
+    // Initial draw on boot: show simulated test tube until user uploads or clicks lab video
+    updateStokesCalculations(1.274, 0.08);
+    viscometerCtx.fillStyle = '#090d16';
+    viscometerCtx.fillRect(0, 0, viscometerCanvas.width, viscometerCanvas.height);
+    viscometerCtx.fillStyle = 'rgba(217, 119, 6, 0.72)';
+    viscometerCtx.fillRect(100, 30, 140, 330);
+    viscometerCtx.strokeStyle = 'rgba(148, 163, 184, 0.45)';
+    viscometerCtx.lineWidth = 3;
+    viscometerCtx.strokeRect(100, 30, 140, 330);
+    drawLaserGates(false, false);
+    // Initial sphere
+    viscometerCtx.beginPath();
+    viscometerCtx.arc(viscometerCanvas.width / 2, 45, 11, 0, Math.PI * 2);
+    viscometerCtx.fillStyle = '#e2e8f0';
+    viscometerCtx.fill();
+    viscometerCtx.strokeStyle = '#38bdf8';
+    viscometerCtx.strokeRect(viscometerCanvas.width / 2 - 16, 45 - 16, 32, 32);
+  }
+
   // Initial Calculation Run on Page Load
   calculateDiagnostics();
 });

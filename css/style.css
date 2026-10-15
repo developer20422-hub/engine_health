@@ -2278,3 +2278,151 @@ input[type="range"]::-webkit-slider-thumb:hover {
   line-height: 1.25;
 }
 
+/* ==========================================================================
+   Optical Video Viscometer Transducer Component
+   ========================================================================== */
+.video-viscometer-panel {
+  background: rgba(18, 17, 24, 0.96);
+  border: 1px solid rgba(255, 136, 0, 0.35);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65), 0 0 25px rgba(255, 136, 0, 0.12);
+}
+
+.viscometer-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.viscometer-actions-toolbar {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.viscometer-grid-layout {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 1.75rem;
+  align-items: start;
+}
+
+@media (max-width: 992px) {
+  .viscometer-grid-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.viscometer-viewport-box {
+  background: rgba(8, 10, 16, 0.88);
+  padding: 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: center;
+}
+
+.viewport-hud-bar {
+  font-family: var(--font-heading);
+  font-size: 0.74rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.65rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.viewport-caption {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 0.75rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.viscometer-telemetry-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.physics-equation-box {
+  background: rgba(25, 24, 33, 0.92);
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-xs);
+  border-left: 4px solid var(--amber-glow);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.viscometer-telemetry-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+.telemetry-hud-card {
+  background: rgba(25, 24, 33, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: var(--radius-xs);
+  padding: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  transition: border-color 0.2s ease;
+}
+
+.telemetry-hud-card:hover {
+  border-color: rgba(255, 136, 0, 0.35);
+}
+
+.telemetry-hud-card.highlight-success {
+  background: rgba(6, 78, 59, 0.35);
+  border-color: rgba(16, 185, 129, 0.45);
+}
+
+.telemetry-label {
+  font-family: var(--font-heading);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+}
+
+.telemetry-val {
+  font-family: var(--font-number);
+  font-size: 1.35rem;
+  font-weight: 700;
+  font-feature-settings: "cv05" 1, "tnum" 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.telemetry-sub {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.feed-confirmation-toast {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.5);
+  color: #a7f3d0;
+  border-radius: var(--radius-xs);
+  padding: 0.75rem 1rem;
+  font-size: 0.82rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  animation: slideUp 0.3s ease;
+}
+
+

@@ -92,6 +92,129 @@
       </div>
     </div>
 
+    <!-- ================= LUBRI-SPEC OPTICAL VIDEO VISCOMETER TRANSDUCER ================= -->
+    <section class="bench-panel video-viscometer-panel" id="video-viscometer-card" style="margin-bottom: 2.2rem; padding: 1.6rem;">
+      
+      <!-- Transducer Header & Action Toolbar -->
+      <div class="viscometer-header-row">
+        <div>
+          <div class="pill-tag amber" style="margin-bottom: 0.5rem; display: inline-flex; align-items: center; gap: 0.4rem;">
+            <i class="fa-solid fa-atom"></i> STOKES' LAW OPTICAL TRANSDUCER (ASTM D445)
+          </div>
+          <h2 style="font-size: 1.45rem; text-transform: uppercase; letter-spacing: 1px; margin: 0.2rem 0; display: flex; align-items: center; gap: 0.6rem;">
+            <span>AUTOMATED VIDEO VISCOMETER &amp;</span>
+            <span class="glow-amber">SOOT ANALYZER</span>
+          </h2>
+          <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.25rem;">
+            Optical frame-by-frame terminal velocity tracking (60 FPS) across twin calibrated laser gates. Eliminates human stopwatch error (&plusmn;0.3s).
+          </p>
+        </div>
+
+        <!-- Action Control Buttons -->
+        <div class="viscometer-actions-toolbar">
+          <label class="btn-secondary" style="cursor: pointer; padding: 0.6rem 1.1rem; font-size: 0.82rem; margin: 0;">
+            <i class="fa-solid fa-video"></i> Upload Oil Video
+            <input type="file" id="oilVideoInput" accept="video/*" style="display: none;">
+          </label>
+          <button type="button" id="btn-load-offline-lab" class="btn-primary" style="padding: 0.6rem 1.1rem; font-size: 0.82rem;">
+            <i class="fa-solid fa-flask-vial"></i> Run Real Lab Video
+          </button>
+          <button type="button" id="simFreshBtn" class="btn-secondary" style="padding: 0.6rem 1rem; font-size: 0.82rem;">
+            <i class="fa-solid fa-circle-play" style="color: #10b981;"></i> Demo: Fresh 15W-40
+          </button>
+          <button type="button" id="simSludgeBtn" class="btn-secondary" style="padding: 0.6rem 1rem; font-size: 0.82rem;">
+            <i class="fa-solid fa-circle-play" style="color: #ef4444;"></i> Demo: Degraded Sludge
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Viscometer Grid: Video & Laser Gates on Left, Physics & Telemetry on Right -->
+      <div class="viscometer-grid-layout">
+        
+        <!-- Left: Video Canvas with Digital Laser Gates -->
+        <div class="viscometer-viewport-box">
+          <div class="viewport-hud-bar">
+            <span><i class="fa-solid fa-camera" style="color: var(--amber-glow); margin-right: 0.35rem;"></i> OPTICAL TRACKING FEED (60 FPS)</span>
+            <span id="trackerStateBadge" class="status-badge optimal" style="font-size: 0.68rem; padding: 0.2rem 0.6rem;">READY</span>
+          </div>
+
+          <div class="viscometer-stage-wrapper" style="position: relative; width: 340px; max-width: 100%; height: 380px; margin: 0 auto; background: #030712; border-radius: var(--radius-xs); overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.12);">
+            <!-- Actual Video Feed (Visible on upload or lab run) -->
+            <video id="viscometerVideo" muted playsinline loop preload="auto"
+              style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; background: #000; display: none; z-index: 1;">
+            </video>
+            <!-- Overlay Canvas for Digital Laser Gates & Tracking HUD -->
+            <canvas id="viscometerCanvas" width="340" height="380"
+              style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none;">
+            </canvas>
+          </div>
+
+          <div class="viewport-caption">
+            <span>Laser Gate Distance (L): <strong style="color: #fff;">0.15 m (150 mm)</strong></span>
+            <span>&bull;</span>
+            <span>Sphere Dia: <strong style="color: #fff;">6.0 mm</strong></span>
+          </div>
+        </div>
+
+        <!-- Right: Fluid Mechanics Equations & Live Telemetry -->
+        <div class="viscometer-telemetry-col">
+          
+          <!-- Stokes' Law Fluid Mechanics Card -->
+          <div class="physics-equation-box">
+            <div style="font-family: var(--font-heading); font-size: 0.78rem; font-weight: 700; color: var(--amber-glow); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem;">
+              <i class="fa-solid fa-square-root-variable"></i> Governing Fluid Mechanics (Stokes' Law)
+            </div>
+            <div style="font-family: var(--font-mono); font-size: 0.78rem; color: #e5e7eb; line-height: 1.6;">
+              1. Dynamic Viscosity: &mu; = [2 &middot; r&sup2; &middot; (&rho;<sub>ball</sub> - &rho;<sub>oil</sub>) &middot; g] / (9 &middot; v)<br>
+              2. Terminal Velocity: v = L / &Delta;t<sub>frames</sub><br>
+              3. Kinematic Viscosity: &nu; (cSt) = [&mu; / &rho;<sub>oil</sub>] &times; 10<sup>6</sup> (Normalized @ 100&deg;C)
+            </div>
+          </div>
+
+          <!-- 4 Live Sensor Readout Cards -->
+          <div class="viscometer-telemetry-grid">
+            <div class="telemetry-hud-card">
+              <div class="telemetry-label">Gate Transit Time (&Delta;t)</div>
+              <div class="telemetry-val" id="outTransitTime" style="color: #38bdf8;">0.000 s</div>
+              <div class="telemetry-sub" id="outVelocity">Velocity v: 0.000 m/s</div>
+            </div>
+
+            <div class="telemetry-hud-card">
+              <div class="telemetry-label">Optical Soot Darkness</div>
+              <div class="telemetry-val" id="outSootPct" style="color: var(--amber-glow);">0.00 % wt</div>
+              <div class="telemetry-sub" id="outSpotCond">Transmittance: --%</div>
+            </div>
+
+            <div class="telemetry-hud-card highlight-success">
+              <div class="telemetry-label" style="color: #a7f3d0;">Measured Viscosity (@100&deg;C)</div>
+              <div class="telemetry-val" id="outViscosityCst" style="color: #34d399;">-- cSt</div>
+              <div class="telemetry-sub" id="outTargetGrade" style="color: #6ee7b7;">Calibrated SAE Benchmark</div>
+            </div>
+
+            <div class="telemetry-hud-card">
+              <div class="telemetry-label">Dynamic Viscosity (&mu;)</div>
+              <div class="telemetry-val" id="outDynamicMu" style="color: #f3f4f6;">-- Pa&middot;s</div>
+              <div class="telemetry-sub">&rho;<sub>ball</sub>=7850 | &rho;<sub>oil</sub>=872 kg/m&sup3;</div>
+            </div>
+          </div>
+
+          <!-- Injection Action Button -->
+          <button type="button" id="feedSoftwareBtn" class="btn-primary"
+            style="width: 100%; padding: 0.85rem; font-size: 0.88rem; justify-content: center; box-shadow: 0 0 20px rgba(255, 136, 0, 0.4);">
+            <i class="fa-solid fa-bolt"></i> Feed Captured Sensor Data into Diagnostic Software
+          </button>
+          
+          <div id="feedConfirmation" class="feed-confirmation-toast" style="display: none;">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>Telemetry calibrated &amp; injected! Viscosity and Soot pushed into Lubri-Spec Engine.</span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
     <!-- Dual Column Workbench Layout -->
     <div class="workbench-layout">
 
