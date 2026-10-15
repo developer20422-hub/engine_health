@@ -146,6 +146,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Formula: S_visc = 100 * exp(-2.8 * |Rv - 1.0|^1.5)
     const viscHealth = Math.min(100, Math.max(0, 100 * Math.exp(-2.8 * Math.pow(Math.abs(ratioV - 1.0), 1.5))));
 
+    // Update Automated Card 1 Percentage Displays
+    const dispViscHealthPct = document.getElementById('disp-visc-health-pct');
+    const barViscHealth = document.getElementById('bar-visc-health');
+    if (dispViscHealthPct) {
+      dispViscHealthPct.textContent = `${Math.round(viscHealth)}%`;
+      dispViscHealthPct.style.color = viscHealth > 80 ? '#34d399' : (viscHealth > 55 ? '#ffaa00' : '#ef4444');
+    }
+    if (barViscHealth) {
+      barViscHealth.style.width = `${Math.round(viscHealth)}%`;
+      barViscHealth.style.background = viscHealth > 80 ? 'var(--status-optimal)' : (viscHealth > 55 ? 'var(--status-warning)' : 'var(--status-critical)');
+    }
+
     // 2. Oil Condition & Spot Test Score
     const blotterHealth = currentBlotterScore;
 
@@ -760,21 +772,95 @@ Summary: ${dispMechanicText ? dispMechanicText.innerText.replace(/\s+/g, ' ').tr
       const dynamicMu = (1.115 * transitTimeSec).toFixed(3); // Pa.s
       const kinematicCst = (parseFloat(dynamicMu) * 10.0).toFixed(1); // Normalized @ 100°C cSt
       const sootWt = (oilDarknessRatio * 1.65).toFixed(2);
+      const clarityPct = Math.max(5, Math.min(99, Math.round((1 - oilDarknessRatio) * 100)));
 
       solvedCst = parseFloat(kinematicCst);
       solvedSoot = parseFloat(sootWt);
 
+      // Determine nominal reference from selected SAE or adapt
+      const currentNominal = parseFloat(saeSelect?.selectedOptions[0]?.getAttribute('data-nom')) || 15.0;
+      const ratioV = solvedCst / currentNominal;
+      const devPct = ((ratioV - 1.0) * 100).toFixed(1);
+
+      // Automated Viscosity Consistency Score % based on ASTM deviation formulation
+      const viscConsistencyPct = Math.round(Math.min(100, Math.max(0, 100 * Math.exp(-2.8 * Math.pow(Math.abs(ratioV - 1.0), 1.5)))));
+
+      // 1. Update Transducer Readouts
       if (outTransitTime) outTransitTime.textContent = transitTimeSec.toFixed(3) + ' s';
       if (outVelocity) outVelocity.textContent = 'Velocity v: ' + velocity.toFixed(3) + ' m/s';
-      if (outDynamicMu) outDynamicMu.textContent = dynamicMu + ' Pa·s';
+      if (outDynamicMu) outDynamicMu.textContent = `μ = ${dynamicMu} Pa·s @ 100°C`;
       if (outViscosityCst) outViscosityCst.textContent = kinematicCst + ' cSt';
       if (outSootPct) outSootPct.textContent = sootWt + ' % wt';
       if (outSpotCond) {
-        outSpotCond.textContent = sootWt < 0.3 ? 'Transmittance: Clean Amber' : (sootWt < 0.9 ? 'Transmittance: Moderate Carbon' : 'Transmittance: High Soot');
+        outSpotCond.textContent = `Clarity: ${clarityPct}% (${sootWt < 0.3 ? 'Clean Amber' : (sootWt < 0.9 ? 'Moderate Carbon' : 'High Soot')})`;
       }
-      if (outTargetGrade) {
-        outTargetGrade.textContent = solvedCst >= 13.5 ? 'Target SAE 15W-40: 14.2 cSt' : 'Target SAE 5W-30: 10.5 cSt';
+
+      const outViscConsistencyPct = document.getElementById('outViscConsistencyPct');
+      const outViscConsistencyStatus = document.getElementById('outViscConsistencyStatus');
+      if (outViscConsistencyPct) {
+        outViscConsistencyPct.textContent = `${viscConsistencyPct}%`;
+        outViscConsistencyPct.style.color = viscConsistencyPct > 80 ? '#34d399' : (viscConsistencyPct > 55 ? '#ffaa00' : '#ef4444');
       }
+      if (outViscConsistencyStatus) {
+        outViscConsistencyStatus.textContent = devPct > 0 ? `+${devPct}% Thickened` : (devPct < 0 ? `${devPct}% Thinning` : 'Nominal Target');
+      }
+
+      // 2. Update Left Column Automated Card 1
+      if (viscSlider) {
+        viscSlider.value = solvedCst;
+      }
+      if (dispViscVal) {
+        dispViscVal.textContent = `${solvedCst.toFixed(1)} cSt`;
+      }
+      if (dispViscDev) {
+        dispViscDev.textContent = devPct > 0 ? `+${devPct}%` : `${devPct}%`;
+        dispViscDev.style.color = Math.abs(devPct) > 18 ? 'var(--status-critical)' : 'var(--status-optimal)';
+      }
+
+      const dispViscHealthPct = document.getElementById('disp-visc-health-pct');
+      const barViscHealth = document.getElementById('bar-visc-health');
+      const dispViscStatusSub = document.getElementById('disp-visc-status-sub');
+      if (dispViscHealthPct) {
+        dispViscHealthPct.textContent = `${viscConsistencyPct}%`;
+        dispViscHealthPct.style.color = viscConsistencyPct > 80 ? '#34d399' : (viscConsistencyPct > 55 ? '#ffaa00' : '#ef4444');
+      }
+      if (barViscHealth) {
+        barViscHealth.style.width = `${viscConsistencyPct}%`;
+        barViscHealth.style.background = viscConsistencyPct > 80 ? 'var(--status-optimal)' : (viscConsistencyPct > 55 ? 'var(--status-warning)' : 'var(--status-critical)');
+      }
+      if (dispViscStatusSub) {
+        dispViscStatusSub.textContent = viscConsistencyPct > 80 ? 'Stable Hydrodynamic Film' : (viscConsistencyPct > 55 ? 'Viscosity Sheared / Degraded' : 'Severe Boundary Friction');
+      }
+
+      // 3. Automatically select matching blotter stage based on measured Soot %
+      let targetScore = 100;
+      let targetName = 'Uniform Ring (Clean Gold)';
+      if (solvedSoot < 0.25) {
+        targetScore = 100;
+        targetName = 'Uniform Ring (Clean Gold)';
+      } else if (solvedSoot < 0.65) {
+        targetScore = 75;
+        targetName = 'Diffuse Core (Good Amber)';
+      } else if (solvedSoot < 1.0) {
+        targetScore = 45;
+        targetName = 'Coagulated Core (Aged Dark)';
+      } else {
+        targetScore = 15;
+        targetName = 'Dense Sludge Center (Black Sludge)';
+      }
+
+      currentBlotterScore = targetScore;
+      if (dispBlotterLabel) dispBlotterLabel.textContent = targetName;
+      blotterCards.forEach(c => {
+        if (parseFloat(c.getAttribute('data-score')) === targetScore) {
+          c.classList.add('active');
+        } else {
+          c.classList.remove('active');
+        }
+      });
+
+      // 4. Automatically re-run master diagnostic calculation engine
+      calculateDiagnostics();
     }
 
     function runOpticalTracking(targetTransitSec, oilColorHex, darknessRatio, isRealVideo) {

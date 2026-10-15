@@ -75,19 +75,8 @@
           </h1>
 
           <p style="color: var(--text-secondary); font-size: 0.95rem; margin-top: 0.35rem;">
-            Enter oil consistency and condition to calculate how long your engine oil will run and when to change it.
+            Real-time hydrodynamic oil health and remaining useful life (RUL) estimation powered by automated Stokes' Law video viscometry.
           </p>
-        </div>
-
-        <!-- Quick Presets for Mechanics -->
-        <div>
-          <span
-            style="font-family: var(--font-heading); font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1.2px;">
-            <i class="fa-solid fa-bolt" style="color: var(--amber-glow);"></i> Quick Presets:
-          </span>
-          <div class="preset-selector-group">
-            <button class="preset-btn active" id="preset-fresh" data-preset="fresh">Fresh Synthetic</button>
-          </div>
         </div>
       </div>
     </div>
@@ -179,22 +168,22 @@
               <div class="telemetry-sub" id="outVelocity">Velocity v: 0.000 m/s</div>
             </div>
 
-            <div class="telemetry-hud-card">
-              <div class="telemetry-label">Optical Soot Darkness</div>
-              <div class="telemetry-val" id="outSootPct" style="color: var(--amber-glow);">0.00 % wt</div>
-              <div class="telemetry-sub" id="outSpotCond">Transmittance: --%</div>
-            </div>
-
             <div class="telemetry-hud-card highlight-success">
-              <div class="telemetry-label" style="color: #a7f3d0;">Measured Viscosity (@100&deg;C)</div>
-              <div class="telemetry-val" id="outViscosityCst" style="color: #34d399;">-- cSt</div>
-              <div class="telemetry-sub" id="outTargetGrade" style="color: #6ee7b7;">Calibrated SAE Benchmark</div>
+              <div class="telemetry-label" style="color: #a7f3d0;">Measured Viscosity (&nu;)</div>
+              <div class="telemetry-val" id="outViscosityCst" style="color: #34d399;">14.2 cSt</div>
+              <div class="telemetry-sub" id="outDynamicMu">&mu; = 1.42 Pa&middot;s @ 100&deg;C</div>
             </div>
 
             <div class="telemetry-hud-card">
-              <div class="telemetry-label">Dynamic Viscosity (&mu;)</div>
-              <div class="telemetry-val" id="outDynamicMu" style="color: #f3f4f6;">-- Pa&middot;s</div>
-              <div class="telemetry-sub">&rho;<sub>ball</sub>=7850 | &rho;<sub>oil</sub>=872 kg/m&sup3;</div>
+              <div class="telemetry-label">Viscosity Consistency %</div>
+              <div class="telemetry-val" id="outViscConsistencyPct" style="color: #38bdf8;">96%</div>
+              <div class="telemetry-sub" id="outViscConsistencyStatus">SAE 15W-40 Target Spec</div>
+            </div>
+
+            <div class="telemetry-hud-card">
+              <div class="telemetry-label">Optical Soot &amp; Clarity</div>
+              <div class="telemetry-val" id="outSootPct" style="color: var(--amber-glow);">0.12 % wt</div>
+              <div class="telemetry-sub" id="outSpotCond">Clarity: 93% (Clean Amber)</div>
             </div>
           </div>
 
@@ -229,46 +218,64 @@
 
         <form id="oil-calc-form" onsubmit="event.preventDefault();">
 
-          <!-- Input 1: Viscosity Grade & Consistency -->
-          <div class="input-section-card">
+          <!-- Input 1: Automated Oil Consistency & Viscosity -->
+          <div class="input-section-card" id="card-auto-viscosity">
             <div class="input-header-row">
-              <label for="viscosity-slider" class="input-label">1. Oil Consistency &amp; Viscosity (&nu;)</label>
-              <span class="input-current-val" id="disp-viscosity-val">10.5 cSt</span>
+              <label class="input-label" style="display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fa-solid fa-atom" style="color: var(--amber-glow);"></i>
+                1. Automated Oil Consistency &amp; Viscosity (&nu;)
+              </label>
+              <span class="pill-tag amber" style="font-size: 0.68rem; padding: 0.2rem 0.55rem;">
+                <i class="fa-solid fa-circle-check"></i> OPTICAL SENSOR SYNC
+              </span>
             </div>
+            
             <div class="input-subtext">
-              Fluid flow resistance measured at 100&deg;C. Evaluated against baseline SAE grade.
+              Fluid viscosity and consistency percentage automatically measured via Stokes' Law optical video tracking.
             </div>
 
-            <div class="form-row-2" style="margin-bottom: 1.1rem;">
+            <!-- Hidden input maintaining seamless compatibility with calculation engine -->
+            <input type="hidden" id="viscosity-slider" value="14.2">
+
+            <div class="form-row-2" style="margin-bottom: 0.9rem;">
               <div class="field-group">
                 <label for="sae-grade-select" class="field-label">SAE Baseline Grade</label>
                 <select id="sae-grade-select" class="select-custom">
                   <option value="0W-20" data-nom="8.2">SAE 0W-20 (Nominal: 8.2 cSt)</option>
-                  <option value="5W-30" data-nom="10.5" selected>SAE 5W-30 (Nominal: 10.5 cSt)</option>
+                  <option value="5W-30" data-nom="10.5">SAE 5W-30 (Nominal: 10.5 cSt)</option>
                   <option value="5W-40" data-nom="14.2">SAE 5W-40 (Nominal: 14.2 cSt)</option>
                   <option value="10W-40" data-nom="14.5">SAE 10W-40 (Nominal: 14.5 cSt)</option>
-                  <option value="15W-40" data-nom="15.0">SAE 15W-40 (Nominal: 15.0 cSt)</option>
+                  <option value="15W-40" data-nom="15.0" selected>SAE 15W-40 (Nominal: 15.0 cSt)</option>
                   <option value="20W-50" data-nom="18.5">SAE 20W-50 (Nominal: 18.5 cSt)</option>
                 </select>
               </div>
 
               <div class="field-group">
-                <label class="field-label">Viscosity Deviation</label>
-                <div
-                  style="font-family: var(--font-mono); font-size: 0.95rem; font-weight: 700; padding: 0.65rem 0.85rem; background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-xs);"
-                  id="disp-visc-deviation">
-                  &plusmn;0.0% (Nominal)
+                <label class="field-label">Measured Kinematic Viscosity</label>
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0.85rem; background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-xs);">
+                  <span id="disp-viscosity-val" style="font-family: var(--font-number); font-size: 1.1rem; font-weight: 700; color: #fff;">14.2 cSt</span>
+                  <span id="disp-visc-deviation" style="font-family: var(--font-mono); font-size: 0.8rem; font-weight: 600; color: var(--status-optimal);">-5.3%</span>
                 </div>
               </div>
             </div>
 
-            <input type="range" id="viscosity-slider" min="4.0" max="25.0" step="0.1" value="10.5">
-
-            <div
-              style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); margin-top: 0.45rem;">
-              <span>4.0 cSt (Watery / Sheared)</span>
-              <span>10.5 cSt (Target)</span>
-              <span>25.0 cSt (Thick Sludge)</span>
+            <!-- Automated Consistency & Health Percentage Display -->
+            <div style="background: rgba(255, 136, 0, 0.05); border: 1px solid rgba(255, 136, 0, 0.2); border-radius: var(--radius-xs); padding: 0.85rem 1rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                <span style="font-family: var(--font-heading); font-size: 0.78rem; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px;">
+                  Calculated Viscosity Consistency Score
+                </span>
+                <span id="disp-visc-health-pct" style="font-family: var(--font-number); font-size: 1.35rem; font-weight: 800; color: #34d399;">
+                  96%
+                </span>
+              </div>
+              <div class="factor-bar-bg" style="height: 8px; background: rgba(255, 255, 255, 0.08); border-radius: 4px; overflow: hidden;">
+                <div id="bar-visc-health" class="factor-bar-fill fill-visc" style="width: 96%; height: 100%; transition: width 0.4s ease;"></div>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-muted); margin-top: 0.35rem; font-family: var(--font-mono);">
+                <span>Hydrodynamic Film: Stable</span>
+                <span id="disp-visc-status-sub">Optimal Flow Characteristic</span>
+              </div>
             </div>
           </div>
 
