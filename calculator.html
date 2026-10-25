@@ -109,43 +109,61 @@
           <!-- Input 1: Viscosity Grade & Consistency -->
           <div class="input-section-card">
             <div class="input-header-row">
-              <label for="viscosity-slider" class="input-label">1. Oil Consistency &amp; Viscosity (&nu;)</label>
-              <span class="input-current-val" id="disp-viscosity-val">10.5 cSt</span>
+              <label for="viscosity-slider" class="input-label">1. Oil Consistency &amp; Ford B4 Cup Time</label>
+              <span class="input-current-val" id="disp-viscosity-val">110.0 cSt (~40.2s flow)</span>
             </div>
             <div class="input-subtext">
-              Fluid flow resistance measured at 100&deg;C. Evaluated against baseline SAE grade.
+              Fluid kinematic viscosity at workshop ambient (~27.5&deg;C) calibrated via ASTM D1200 Ford B4 Cup (t = 20&ndash;100s).
             </div>
 
-            <div class="form-row-2" style="margin-bottom: 1.1rem;">
+            <div class="form-row-2" style="margin-bottom: 0.85rem;">
               <div class="field-group">
-                <label for="sae-grade-select" class="field-label">SAE Baseline Grade</label>
+                <label for="sae-grade-select" class="field-label">SAE Baseline Grade (@27.5&deg;C)</label>
                 <select id="sae-grade-select" class="select-custom">
-                  <option value="0W-20" data-nom="8.2">SAE 0W-20 (Nominal: 8.2 cSt)</option>
-                  <option value="5W-30" data-nom="10.5" selected>SAE 5W-30 (Nominal: 10.5 cSt)</option>
-                  <option value="5W-40" data-nom="14.2">SAE 5W-40 (Nominal: 14.2 cSt)</option>
-                  <option value="10W-40" data-nom="14.5">SAE 10W-40 (Nominal: 14.5 cSt)</option>
-                  <option value="15W-40" data-nom="15.0">SAE 15W-40 (Nominal: 15.0 cSt)</option>
-                  <option value="20W-50" data-nom="18.5">SAE 20W-50 (Nominal: 18.5 cSt)</option>
+                  <option value="0W-20" data-nom="76.0">0W-20 (Nominal: 76.0 cSt | ~31.4s)</option>
+                  <option value="5W-30" data-nom="110.0" selected>5W-30 (Nominal: 110.0 cSt | ~40.2s)</option>
+                  <option value="10W-40" data-nom="176.0">10W-40 (Nominal: 176.0 cSt | ~57.4s)</option>
+                  <option value="15W-40" data-nom="225.0">15W-40 (Nominal: 225.0 cSt | ~70.1s)</option>
+                  <option value="20W-50" data-nom="295.0">20W-50 (Nominal: 295.0 cSt | ~88.3s)</option>
                 </select>
               </div>
 
               <div class="field-group">
-                <label class="field-label">Viscosity Deviation</label>
+                <label for="workshop-temp" class="field-label">Workshop Temp (&deg;C)</label>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                  <input type="number" id="workshop-temp" min="20.0" max="35.0" step="0.5" value="27.5"
+                    class="select-custom" style="font-family: var(--font-mono); font-weight: 700; width: 100%;">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row-2" style="margin-bottom: 0.85rem;">
+              <div class="field-group">
+                <label class="field-label">Viscosity Deviation (Rv)</label>
                 <div
                   style="font-family: var(--font-mono); font-size: 0.95rem; font-weight: 700; padding: 0.65rem 0.85rem; background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-xs);"
                   id="disp-visc-deviation">
                   &plusmn;0.0% (Nominal)
                 </div>
               </div>
+
+              <div class="field-group">
+                <label class="field-label">Ford B4 Flow Time (Stopwatch)</label>
+                <div
+                  style="font-family: var(--font-mono); font-size: 0.95rem; font-weight: 700; padding: 0.65rem 0.85rem; background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-xs); color: var(--amber-glow);"
+                  id="disp-ford-flow-time">
+                  ~40.2 sec
+                </div>
+              </div>
             </div>
 
-            <input type="range" id="viscosity-slider" min="4.0" max="25.0" step="0.1" value="10.5">
+            <input type="range" id="viscosity-slider" min="30.0" max="350.0" step="0.5" value="110.0">
 
             <div
               style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); margin-top: 0.45rem;">
-              <span>4.0 cSt (Watery / Sheared)</span>
-              <span>10.5 cSt (Target)</span>
-              <span>25.0 cSt (Thick Sludge)</span>
+              <span>30.0 cSt (~19.5s)</span>
+              <span>110.0 cSt (5W-30 Baseline)</span>
+              <span>350.0 cSt (~102.6s)</span>
             </div>
           </div>
 
@@ -228,32 +246,31 @@
               </div>
 
               <div class="field-group">
-                <label for="oil-base-type" class="field-label">Base Oil Type</label>
+                <label for="oil-base-type" class="field-label">Base Oil (oil_base_type)</label>
                 <select id="oil-base-type" class="select-custom">
-                  <option value="mineral" data-factor="1.0">Conventional Mineral (1.0x)</option>
-                  <option value="semi" data-factor="1.3">Semi-Synthetic (1.3x)</option>
-                  <option value="full" data-factor="1.7" selected>Full Synthetic (1.7x)</option>
-                  <option value="pao" data-factor="2.0">Group IV PAO / Ester (2.0x)</option>
+                  <option value="Mineral" data-factor="1.0">Mineral (1.0x)</option>
+                  <option value="Semi-Synthetic" data-factor="1.35">Semi-Synthetic (1.35x)</option>
+                  <option value="Full-Synthetic" data-factor="1.70" selected>Full-Synthetic (1.70x)</option>
                 </select>
               </div>
             </div>
 
             <div class="form-row-2">
               <div class="field-group">
-                <label for="engine-type" class="field-label">Engine Architecture</label>
+                <label for="engine-type" class="field-label">Engine (engine_type)</label>
                 <select id="engine-type" class="select-custom">
-                  <option value="na-petrol" data-factor="1.0" selected>Naturally Aspirated Petrol</option>
-                  <option value="turbo-petrol" data-factor="0.92">Turbocharged Petrol</option>
-                  <option value="diesel" data-factor="0.82">Turbo Diesel</option>
+                  <option value="Naturally Aspirated Petrol" data-factor="1.0" selected>Naturally Aspirated Petrol (1.0x)</option>
+                  <option value="Turbo Petrol" data-factor="0.85">Turbo Petrol (0.85x)</option>
+                  <option value="Diesel" data-factor="0.75">Diesel (0.75x)</option>
                 </select>
               </div>
 
               <div class="field-group">
-                <label for="duty-cycle" class="field-label">Driving Conditions</label>
+                <label for="duty-cycle" class="field-label">Driving (driving_condition)</label>
                 <select id="duty-cycle" class="select-custom">
-                  <option value="highway" data-factor="1.2">Highway Cruise (Low Stress)</option>
-                  <option value="mixed" data-factor="1.0" selected>Normal Mixed Driving</option>
-                  <option value="severe" data-factor="0.75">Severe / Stop-and-Go / Heavy Load</option>
+                  <option value="Highway" data-factor="1.25">Highway (1.25x)</option>
+                  <option value="Mixed Urban" data-factor="1.0" selected>Mixed Urban (1.0x)</option>
+                  <option value="City Stop-and-Go" data-factor="0.75">City Stop-and-Go (0.75x)</option>
                 </select>
               </div>
             </div>

@@ -19,24 +19,58 @@
 
 ## 📐 Mathematical Formulation
 
-### 1. Viscosity Consistency Score ($S_{\text{visc}}$)
-Evaluates deviation from baseline SAE grade (e.g., 10.5 cSt for 5W-30 at 100°C):
-$$R_v = \frac{\nu_{\text{measured}}}{\nu_{\text{nominal}}}$$
+## ?? Mathematical Formulation
+
+### 1. Kinematic Viscosity Conversion (ASTM D1200 Ford B4 Cup)
+Converts gravity efflux flow time ($t$ in seconds) through a 4.12 mm orifice into kinematic viscosity (cSt):
+$$\nu_{\text{measured}} = 3.85 \times t - 44.9$$
+
+### 2. Workshop Ambient Baselines (@ 27.5�C) & Thermal Compensation
+Standard nominal kinematic viscosities calibrated for unheated ambient testing:
+- **0W-20**: $\nu_{\text{nom, 27.5�C}} = 76.0\text{ cSt}$ (Expected fresh flow time: ~31.4 sec)
+- **5W-30**: $\nu_{\text{nom, 27.5�C}} = 110.0\text{ cSt}$ (Expected fresh flow time: ~40.2 sec)
+- **10W-40**: $\nu_{\text{nom, 27.5�C}} = 176.0\text{ cSt}$ (Expected fresh flow time: ~57.4 sec)
+- **15W-40**: $\nu_{\text{nom, 27.5�C}} = 225.0\text{ cSt}$ (Expected fresh flow time: ~70.1 sec)
+- **20W-50**: $\nu_{\text{nom, 27.5�C}} = 295.0\text{ cSt}$ (Expected fresh flow time: ~88.3 sec)
+
+**Thermal Compensation Formula:**
+$$\nu_{\text{nom}}(T) = \nu_{\text{nom, 27.5�C}} \times \exp\left(-0.048 \times (T - 27.5)\right)$$
+Where $T$ is the ambient workshop temperature in �C (typically between 20.0�C and 35.0�C).
+
+### 3. Viscosity Consistency Score ($S_{\text{visc}}$)
+Evaluates deviation ratio from temperature-compensated baseline grade:
+$$R_v = \frac{\nu_{\text{measured}}}{\nu_{\text{nom}}(T)}$$
+$$\text{Deviation \%} = (R_v - 1.0) \times 100$$
 $$S_{\text{visc}} = 100 \times \exp\left(-2.8 \times |R_v - 1.0|^{1.5}\right)$$
 
-### 2. Optical Transmittance Score ($S_{\text{trans}}$)
-Translates light penetration ($T\%$) through a 1mm fluid gap:
-$$S_{\text{trans}} = \left(\frac{T}{100}\right)^{0.75} \times 100$$
-$$\text{Estimated Soot (\% wt)} = -\ln\left(\frac{T}{98}\right) \times 0.92$$
+### 4. Blotter Spot Dispersancy Index ($S_{\text{blotter}}$)
+From ASTM D7899 paper spot chromatography:
+$$I_D = 1 - \frac{d^2}{D^2}$$
+Mapped to 4 operational stages: 100% (Clean), 75% (Good Amber), 45% (Aged Dark), 15% (Critical Sludge).
 
-### 3. Oil Health Index ($OHI$)
+### 5. Composite Oil Health Index ($OHI$)
 Weighted composite index evaluating fluid integrity:
-$$OHI = 0.45 \cdot S_{\text{trans}} + 0.40 \cdot S_{\text{visc}} + 0.15 \cdot S_{\text{blotter}}$$
+$$OHI = 0.50 \times S_{\text{visc}} + 0.50 \times S_{\text{blotter}}$$
 
-### 4. Remaining Useful Life ($RUL$)
-$$RUL_{\text{distance}} = \max\left(0, D_{\text{nominal}} \times M_{\text{duty}} \times \left(\frac{OHI - 25}{75}\right)\right)$$
+### 6. Duty Cycle Scaling ($M_{\text{duty}}$)
+Factors in real-world vehicle operating severity:
+$$M_{\text{duty}} = F_{\text{base\_oil}} \times F_{\text{engine}} \times F_{\text{driving\_mode}}$$
+- **Base Oil (`oil_base_type`):** `Mineral` $\rightarrow 1.0$, `Semi-Synthetic` $\rightarrow 1.35$, `Full-Synthetic` $\rightarrow 1.70$
+- **Engine (`engine_type`):** `Naturally Aspirated Petrol` $\rightarrow 1.0$, `Turbo Petrol` $\rightarrow 0.85$, `Diesel` $\rightarrow 0.75$
+- **Driving (`driving_condition`):** `Highway` $\rightarrow 1.25$, `Mixed Urban` $\rightarrow 1.0$, `City Stop-and-Go` $\rightarrow 0.75$
 
-Where $M_{\text{duty}} = F_{\text{base\_oil}} \times F_{\text{engine}} \times F_{\text{driving\_mode}}$.
+### 7. Remaining Useful Life ($RUL$) with Upper Boundary Cap
+$$RUL = \begin{cases} 
+\min\left(12000, \; 5500 \times M_{\text{duty}} \times \left(\frac{OHI - 25}{75}\right)\right), & \text{if } OHI > 30\% \\[8pt]
+0\text{ km}, & \text{if } OHI \le 30\% 
+\end{cases}$$
+
+### 8. Target Service Recommendation Thresholds
+- **Critical:** $OHI \le 30\%$ OR $\text{Deviation \%} < -25\%$ OR $\text{Deviation \%} > +35\%$
+- **Service Soon:** $30\% < OHI < 55\%$ OR $\text{Deviation \%} < -15\%$ OR $\text{Deviation \%} > +20\%$
+- **Stable:** $55\% \le OHI < 80\%$ (with $\text{Deviation \%}$ within $-15\%$ to $+20\%$)
+- **Optimal:** $OHI \ge 80\%$ (with $\text{Deviation \%}$ within $-15\%$ to $+20\%$)
+*(Deviation % override guarantees severe fuel thinning or oxidative thickening cannot receive an Optimal rating even with a clean blotter).*
 
 ---
 

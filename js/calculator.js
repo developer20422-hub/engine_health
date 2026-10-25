@@ -23,6 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const dispSootPct = document.getElementById('disp-soot-pct');
   const miniDroplet = document.getElementById('mini-droplet-swatch');
   const dispBlotterLabel = document.getElementById('disp-blotter-label');
+  const tempInput = document.getElementById('workshop-temp');
+  const dispFordFlow = document.getElementById('disp-ford-flow-time');
 
   // DOM Elements - Outputs & KPIs
   const dispOhiPercent = document.getElementById('disp-ohi-percent');
@@ -58,58 +60,63 @@ document.addEventListener('DOMContentLoaded', () => {
   const presets = {
     fresh: {
       sae: '5W-30',
-      visc: 10.5,
+      visc: 110.0,
+      temp: 27.5,
       trans: 92,
       blotter: 100,
       blotterName: 'Uniform Ring (Clean Gold)',
       mileage: 1200,
-      oilBase: 'full',
-      engine: 'na-petrol',
-      duty: 'highway'
+      oilBase: 'Full-Synthetic',
+      engine: 'Naturally Aspirated Petrol',
+      duty: 'Highway'
     },
     mid: {
       sae: '5W-30',
-      visc: 9.9,
+      visc: 104.0,
+      temp: 27.5,
       trans: 70,
       blotter: 75,
       blotterName: 'Diffuse Core (Good Amber)',
       mileage: 6200,
-      oilBase: 'full',
-      engine: 'na-petrol',
-      duty: 'mixed'
+      oilBase: 'Full-Synthetic',
+      engine: 'Naturally Aspirated Petrol',
+      duty: 'Mixed Urban'
     },
     sheared: {
       sae: '5W-30',
-      visc: 6.8, // severe fuel shear / thinning
+      visc: 78.0, // severe fuel shear / thinning (-29%)
+      temp: 27.5,
       trans: 62,
       blotter: 75,
       blotterName: 'Diffuse Core (Good Amber)',
       mileage: 7800,
-      oilBase: 'semi',
-      engine: 'turbo-petrol',
-      duty: 'severe'
+      oilBase: 'Semi-Synthetic',
+      engine: 'Turbo Petrol',
+      duty: 'City Stop-and-Go'
     },
     diesel: {
       sae: '15W-40',
-      visc: 14.8,
-      trans: 22, // high diesel soot
+      visc: 245.0, // diesel soot thickening (+8.9%)
+      temp: 27.5,
+      trans: 22,
       blotter: 45,
       blotterName: 'Coagulated Core (Aged Dark)',
       mileage: 8500,
-      oilBase: 'semi',
-      engine: 'diesel',
-      duty: 'mixed'
+      oilBase: 'Semi-Synthetic',
+      engine: 'Diesel',
+      duty: 'Mixed Urban'
     },
     sludge: {
       sae: '10W-40',
-      visc: 21.5, // heavy oxidized sludge thickening
+      visc: 255.0, // heavy oxidized sludge thickening (+44.9%)
+      temp: 27.5,
       trans: 8,
       blotter: 15,
       blotterName: 'Dense Sludge Center (Black Sludge)',
       mileage: 14500,
-      oilBase: 'mineral',
-      engine: 'na-petrol',
-      duty: 'severe'
+      oilBase: 'Mineral',
+      engine: 'Naturally Aspirated Petrol',
+      duty: 'City Stop-and-Go'
     }
   };
 
@@ -118,7 +125,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!saeSelect || !viscSlider) return;
 
     const selectedSae = saeSelect.value;
-    const nominalVisc = parseFloat(saeSelect.selectedOptions[0]?.getAttribute('data-nom')) || 10.5;
+    const tempC = tempInput ? (parseFloat(tempInput.value) || 27.5) : 27.5;
+    const baseNominal275 = parseFloat(saeSelect.selectedOptions[0]?.getAttribute('data-nom')) || 110.0;
+    
+    // Step 2 Enhancement: Thermal Compensation Formula
+    // nu_nom(T) = nu_nom,27.5 * exp(-0.048 * (T - 27.5))
+    const nominalVisc = baseNominal275 * Math.exp(-0.048 * (tempC - 27.5));
+
     const currentVisc = parseFloat(viscSlider.value);
     const currentDistance = Math.max(0, parseFloat(mileageInput?.value) || 0);
     const isMiles = unitToggle?.value === 'mi';
@@ -128,15 +141,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // Ratio Rv = current / nominal
     const ratioV = currentVisc / nominalVisc;
     const devPct = ((ratioV - 1.0) * 100).toFixed(1);
-    if (dispViscVal) dispViscVal.textContent = `${currentVisc.toFixed(1)} cSt`;
+    const numDev = parseFloat(devPct);
+
+    // Calculate Ford B4 Flow Time: nu = 3.85 * t - 44.9 => t = (nu + 44.9) / 3.85
+    const flowTimeSec = Math.max(0, (currentVisc + 44.9) / 3.85);
+
+    if (dispViscVal) dispViscVal.textContent = `${currentVisc.toFixed(1)} cSt (~${flowTimeSec.toFixed(1)}s flow)`;
+    if (dispFordFlow) dispFordFlow.textContent = `~${flowTimeSec.toFixed(1)} sec`;
 
     if (dispViscDev) {
-      if (devPct > 0) {
+      if (numDev > 0) {
         dispViscDev.textContent = `+${devPct}% (Thickened)`;
-        dispViscDev.style.color = devPct > 20 ? 'var(--status-critical)' : 'var(--amber-glow)';
-      } else if (devPct < 0) {
+        dispViscDev.style.color = numDev > 20 ? 'var(--status-critical)' : 'var(--amber-glow)';
+      } else if (numDev < 0) {
         dispViscDev.textContent = `${devPct}% (Thin / Sheared)`;
-        dispViscDev.style.color = devPct < -18 ? 'var(--status-critical)' : 'var(--status-stable)';
+        dispViscDev.style.color = numDev < -18 ? 'var(--status-critical)' : 'var(--status-stable)';
       } else {
         dispViscDev.textContent = `0.0% (Nominal Spec)`;
         dispViscDev.style.color = 'var(--status-optimal)';
@@ -149,7 +168,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. Oil Condition & Spot Test Score
     const blotterHealth = currentBlotterScore;
 
-    // Derived optical clarity & soot level based on the blotter selection
     let transHealth = blotterHealth;
     let sootEst = "0.10% wt";
     let opticalStatus = "Clear / Translucent";
@@ -165,7 +183,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (dispTransVal) dispTransVal.textContent = `${transVal}%`;
     } else {
-      // Map directly from the Blotter test in the left window
       if (blotterHealth >= 90) {
         transHealth = 95;
         sootEst = "0.12% wt";
@@ -189,10 +206,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (dispSootPct) dispSootPct.textContent = sootEst;
 
     // 3. Composite Oil Health Index (OHI)
-    // 50% Viscosity consistency, 50% Spot condition & dispersancy
     const ohi = Math.round((0.50 * viscHealth) + (0.50 * blotterHealth));
 
-    // Update Breakdown Progress Bars in the Results Window
+    // Update Breakdown Progress Bars in Results Window
     if (dispFactorVisc) dispFactorVisc.textContent = `${Math.round(viscHealth)}%`;
     if (barFactorVisc) barFactorVisc.style.width = `${Math.round(viscHealth)}%`;
     if (dispFactorTrans) dispFactorTrans.textContent = `${Math.round(transHealth)}%`;
@@ -200,8 +216,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (dispFactorBlotter) dispFactorBlotter.textContent = `${Math.round(blotterHealth)}%`;
     if (barFactorBlotter) barFactorBlotter.style.width = `${Math.round(blotterHealth)}%`;
 
-    // 4. Operating Duty Multipliers from Left Window
-    const baseOilFactor = parseFloat(oilBaseSelect?.selectedOptions[0]?.getAttribute('data-factor')) || 1.7;
+    // 4. Operating Duty Multipliers (Step 3 Parameter String Alignment)
+    const baseOilFactor = parseFloat(oilBaseSelect?.selectedOptions[0]?.getAttribute('data-factor')) || 1.70;
     const engineFactor = parseFloat(engineTypeSelect?.selectedOptions[0]?.getAttribute('data-factor')) || 1.0;
     const dutyFactor = parseFloat(dutyCycleSelect?.selectedOptions[0]?.getAttribute('data-factor')) || 1.0;
     const compositeDutyMultiplier = baseOilFactor * engineFactor * dutyFactor;
@@ -209,10 +225,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Baseline nominal maximum distance (km) for standard mineral oil under normal duty: 5,500 km
     const baselineNominalKm = 5500 * compositeDutyMultiplier;
 
-    // Remaining Useful Life (RUL) distance calculation
+    // Step 9 Update: Upper Boundary Cap for RUL
+    // If OHI > 30%: RUL = min(12000, Baseline Distance * ((OHI - 25) / 75))
+    // If OHI <= 30%: RUL = 0 km
     let rulKm = 0;
     if (ohi > 30) {
-      rulKm = Math.round(baselineNominalKm * ((ohi - 25) / 75));
+      const calculatedRul = baselineNominalKm * ((ohi - 25) / 75);
+      rulKm = Math.round(Math.min(12000, calculatedRul));
     } else {
       rulKm = 0;
     }
@@ -222,11 +241,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalChangeOdo = currentDistance + rulDistance;
     const estEngineHours = Math.round(rulDistance / (isMiles ? 32 : 52));
 
-    // Update Output Displays in the Results Window
+    // Update Output Displays in Results Window
     if (dispOhiPercent) dispOhiPercent.textContent = `${ohi}%`;
     if (dispRulUnit) dispRulUnit.textContent = unitLabel;
 
-    // SVG Gauge Ring calculation (Circumference = 2 * PI * 58 = 364.4)
+    // SVG Gauge Ring calculation
     if (svgGaugeRing) {
       const circumference = 364.4;
       const ringOffset = circumference - (circumference * (ohi / 100));
@@ -234,41 +253,63 @@ document.addEventListener('DOMContentLoaded', () => {
       svgGaugeRing.style.strokeDashoffset = `${Math.max(0, ringOffset)}`;
     }
 
-    // Color and status badge assignment
+    // Step 10 Addition: Target Output 3 (service_recommendation) Thresholds with Deviation % Overrides
+    let serviceRecommendation = 'Optimal';
     let statusTheme = 'optimal';
-    let statusText = 'OPTIMAL INTEGRITY';
+    let statusText = 'OPTIMAL CONDITION';
     let statusColor = 'var(--status-optimal)';
-    let urgencyMessage = 'Safe operating envelope. Additives active; lubrication film fully maintained.';
+    let urgencyMessage = 'Excellent lubrication film. Viscosity is on spec, and additive pack has full reserve. Safe for normal continuous running.';
 
-    if (ohi >= 75) {
-      statusTheme = 'optimal';
-      statusText = 'OPTIMAL CONDITION';
-      statusColor = 'var(--status-optimal)';
-      if (svgGaugeRing) svgGaugeRing.style.stroke = 'var(--status-optimal)';
-      urgencyMessage = `Excellent lubrication film. Viscosity is stable, and additive pack has plenty of reserve. Safe for normal continuous running.`;
-    } else if (ohi >= 55) {
-      statusTheme = 'stable';
-      statusText = 'STABLE OPERATIONAL';
-      statusColor = 'var(--status-stable)';
-      if (svgGaugeRing) svgGaugeRing.style.stroke = 'var(--status-stable)';
-      urgencyMessage = `Normal mid-life wear. Detergents are active and soot dispersion is within design limits. Continue regular operation.`;
-    } else if (ohi >= 35) {
-      statusTheme = 'warning';
-      statusText = 'SERVICE DUE SOON';
-      statusColor = 'var(--amber-glow)';
-      if (svgGaugeRing) svgGaugeRing.style.stroke = 'var(--amber-primary)';
-      urgencyMessage = `Degradation acceleration detected. Additives depleted. Plan oil and filter change within the remaining ${rulDistance.toLocaleString()} ${unitLabel}.`;
-    } else {
+    // Critical: OHI <= 30% OR Dev% < -25% OR Dev% > +35%
+    if (ohi <= 30 || numDev < -25 || numDev > 35) {
+      serviceRecommendation = 'Critical';
       statusTheme = 'critical';
       statusText = 'CRITICAL / CHANGE NOW';
       statusColor = 'var(--status-critical)';
-      if (svgGaugeRing) svgGaugeRing.style.stroke = 'var(--status-critical)';
-      urgencyMessage = `CRITICAL WARNING: Lubrication breakdown risk! Oil film unable to protect crank and cam journals. Immediate drain and filter flush mandatory.`;
+      if (numDev < -25) {
+        urgencyMessage = `CRITICAL: Severe fuel dilution detected (viscosity dropped by ${Math.abs(numDev).toFixed(1)}%). Oil film collapsed. Immediate drain and fuel injector inspection mandatory.`;
+      } else if (numDev > 35) {
+        urgencyMessage = `CRITICAL: Severe oxidative thickening and sludge formation (+${numDev.toFixed(1)}% viscosity). High risk of engine seizure. Immediate flush and oil replacement required.`;
+      } else {
+        urgencyMessage = `CRITICAL: Lubrication breakdown risk (OHI ${ohi}%). Oil film unable to protect crank and cam journals. Immediate drain and filter flush mandatory.`;
+      }
     }
+    // Service Soon: 30% < OHI < 55% OR Dev% < -15% OR Dev% > +20%
+    else if ((ohi > 30 && ohi < 55) || numDev < -15 || numDev > 20) {
+      serviceRecommendation = 'Service Soon';
+      statusTheme = 'warning';
+      statusText = 'SERVICE DUE SOON';
+      statusColor = 'var(--amber-glow)';
+      if (numDev < -15) {
+        urgencyMessage = `Fuel dilution thinning detected (${numDev.toFixed(1)}% viscosity loss). Schedule oil change within remaining ${rulDistance.toLocaleString()} ${unitLabel} and inspect injectors.`;
+      } else if (numDev > 20) {
+        urgencyMessage = `Thermal thickening detected (+${numDev.toFixed(1)}% viscosity). Additives depleting. Schedule oil and filter change within ${rulDistance.toLocaleString()} ${unitLabel}.`;
+      } else {
+        urgencyMessage = `Degradation acceleration detected (OHI ${ohi}%). Additives depleted. Plan oil and filter change within remaining ${rulDistance.toLocaleString()} ${unitLabel}.`;
+      }
+    }
+    // Stable: 55% <= OHI < 80% (with Deviation % within -15% to +20%)
+    else if (ohi >= 55 && ohi < 80 && numDev >= -15 && numDev <= 20) {
+      serviceRecommendation = 'Stable';
+      statusTheme = 'stable';
+      statusText = 'STABLE OPERATIONAL';
+      statusColor = 'var(--status-stable)';
+      urgencyMessage = `Normal mid-life wear. Viscosity deviation (${devPct}%) is within design limits and soot dispersion is stable. Continue regular operation.`;
+    }
+    // Optimal: OHI >= 80% (with Deviation % within -15% to +20%)
+    else {
+      serviceRecommendation = 'Optimal';
+      statusTheme = 'optimal';
+      statusText = 'OPTIMAL CONDITION';
+      statusColor = 'var(--status-optimal)';
+      urgencyMessage = `Excellent lubrication film. Viscosity is on spec (${devPct}%), and additive pack has full reserve. Safe for normal continuous running.`;
+    }
+
+    if (svgGaugeRing) svgGaugeRing.style.stroke = statusColor;
 
     if (dispStatusBadge) {
       dispStatusBadge.className = `status-badge ${statusTheme}`;
-      dispStatusBadge.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${statusText}`;
+      dispStatusBadge.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${statusText} &bull; [${serviceRecommendation.toUpperCase()}]`;
     }
     if (dispServiceUrgency) dispServiceUrgency.textContent = urgencyMessage;
 
@@ -291,12 +332,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Dynamic Mechanic Recommendations Generator
-    generateMechanicAdvisory(ratioV, blotterHealth, devPct, selectedSae, ohi, unitLabel, rulDistance);
+    generateMechanicAdvisory(ratioV, blotterHealth, devPct, selectedSae, ohi, unitLabel, rulDistance, serviceRecommendation);
 
     // Update Trajectory Chart
     updateDegradationChart(currentDistance, totalChangeOdo, ohi, baselineNominalKm, isMiles, unitLabel);
   }
-
   // Dynamic Mechanic Recommendations Logic
   function generateMechanicAdvisory(ratioV, blotterScore, devPct, saeGrade, ohi, unitLabel, rulDistance) {
     if (!dispMechanicText) return;
@@ -471,6 +511,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Event Listeners for Reactive Inputs
+  tempInput?.addEventListener('input', calculateDiagnostics);
+
   saeSelect?.addEventListener('change', () => {
     const nom = parseFloat(saeSelect.selectedOptions[0]?.getAttribute('data-nom'));
     if (!isNaN(nom)) viscSlider.value = nom;
@@ -507,6 +549,7 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.classList.add('active');
 
       if (saeSelect) saeSelect.value = p.sae;
+      if (tempInput && p.temp) tempInput.value = p.temp;
       if (viscSlider) viscSlider.value = p.visc;
       if (transSlider && p.trans) transSlider.value = p.trans;
       if (mileageInput) mileageInput.value = p.mileage;

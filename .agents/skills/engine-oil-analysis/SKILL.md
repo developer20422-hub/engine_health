@@ -21,31 +21,53 @@ Internal combustion engine lubricants degrade through three primary mechanisms:
 
 ---
 
-## 2. Key Diagnostic Parameters
+## 2. Key Diagnostic Parameters & Formulations
 
-### A. Kinematic Viscosity / Consistency ($\nu$)
-- **Baseline**: Rated at 100°C according to SAE J300 specifications (e.g., 5W-30 is typically 9.3 to 12.5 cSt).
-- **Shearing Ratio ($R_v$)**:
-  $$R_v = \frac{\nu_{\text{current}}}{\nu_{\text{nominal}}}$$
-  - $R_v < 0.80$: Severe thinning (fuel dilution or shear loss). High risk of boundary friction.
-  - $0.85 \le R_v \le 1.15$: Optimal operating range.
-  - $R_v > 1.25$: Severe oxidation/sludge thickening. High risk of oil starvation.
+### A. Kinematic Viscosity / Consistency (nu) - ASTM D1200 Ford B4 Cup
+- Efflux flow time ($t$ in seconds) through 4.12 mm nozzle converted to kinematic viscosity in cSt:
+  $$\nu = 3.85 \times t - 44.9$$
 
-### B. Optical Transparency / Transmittance ($T$)
-- Measured via optical transmittance percentage ($T \in [0\%, 100\%]$) or photometric light penetration:
-  - Fresh synthetic oil: $T \approx 90\% - 100\%$ (Honey-amber translucent).
-  - Normal oxidation: $T \approx 50\% - 75\%$ (Dark amber / light brown).
-  - High soot / nitration: $T \approx 20\% - 45\%$ (Opaque brown/black).
-  - Sludge & severe carbon suspension: $T < 15\%$ (Pitch black opaque).
-- Follows modified Beer-Lambert Law:
-  $$T = T_0 \cdot e^{-\alpha \cdot (C_{\text{soot}} + C_{\text{ox}})}$$
+### B. Workshop Ambient Baselines (@ 27.5�C) & Thermal Compensation
+Calibrated nominal kinematic viscosities for ambient workshop testing:
+- **0W-20**: $\nu_{\text{nom, 27.5�C}} = 76.0\text{ cSt}$ (~31.4s flow)
+- **5W-30**: $\nu_{\text{nom, 27.5�C}} = 110.0\text{ cSt}$ (~40.2s flow)
+- **10W-40**: $\nu_{\text{nom, 27.5�C}} = 176.0\text{ cSt}$ (~57.4s flow)
+- **15W-40**: $\nu_{\text{nom, 27.5�C}} = 225.0\text{ cSt}$ (~70.1s flow)
+- **20W-50**: $\nu_{\text{nom, 27.5�C}} = 295.0\text{ cSt}$ (~88.3s flow)
 
-### C. Blotter Spot Chromatography
-- A drop of oil on chromatography/blotting paper develops radial zones:
-  - Central core: Heavy soot / insoluble deposits.
-  - Intermediate ring: Dispersancy zone.
-  - Outer translucent halo: Base oil condition.
-  - Dispersancy Index ($DI$) evaluates if detergent additives are still capable of suspending carbon.
+**Thermal Compensation:**
+$$\nu_{\text{nom}}(T) = \nu_{\text{nom, 27.5�C}} \times \exp\left(-0.048 \times (T - 27.5)\right)$$
+Where $T$ is the ambient workshop temperature in �C.
+
+### C. Viscosity Consistency Score ($S_{\text{visc}}$)
+$$R_v = \frac{\nu_{\text{measured}}}{\nu_{\text{nom}}(T)}$$
+$$\text{Deviation \%} = (R_v - 1.0) \times 100$$
+$$S_{\text{visc}} = 100 \times \exp\left(-2.8 \times |R_v - 1.0|^{1.5}\right)$$
+
+### D. Blotter Spot Dispersancy ($S_{\text{blotter}}$) - ASTM D7899
+$$I_D = 1 - \frac{d^2}{D^2}$$
+Stages: 100% (Clean), 75% (Good Amber), 45% (Aged Dark), 15% (Critical Sludge).
+
+### E. Composite Oil Health Index ($OHI$)
+$$OHI = 0.50 \times S_{\text{visc}} + 0.50 \times S_{\text{blotter}}$$
+
+### F. Operating Duty Factors ($M_{\text{duty}}$)
+- **Base Oil (`oil_base_type`):** `Mineral` = 1.0, `Semi-Synthetic` = 1.35, `Full-Synthetic` = 1.70
+- **Engine (`engine_type`):** `Naturally Aspirated Petrol` = 1.0, `Turbo Petrol` = 0.85, `Diesel` = 0.75
+- **Driving (`driving_condition`):** `Highway` = 1.25, `Mixed Urban` = 1.0, `City Stop-and-Go` = 0.75
+$$M_{\text{duty}} = F_{\text{base\_oil}} \times F_{\text{engine}} \times F_{\text{driving\_mode}}$$
+
+### G. Remaining Useful Life ($RUL$)
+$$RUL = \begin{cases} 
+\min\left(12000, \; 5500 \times M_{\text{duty}} \times \left(\frac{OHI - 25}{75}\right)\right), & \text{if } OHI > 30\% \\[8pt]
+0\text{ km}, & \text{if } OHI \le 30\% 
+\end{cases}$$
+
+### H. Service Recommendation Thresholds
+- **Critical:** $OHI \le 30\%$ OR $\text{Deviation \%} < -25\%$ OR $\text{Deviation \%} > +35\%$
+- **Service Soon:** $30\% < OHI < 55\%$ OR $\text{Deviation \%} < -15\%$ OR $\text{Deviation \%} > +20\%$
+- **Stable:** $55\% \le OHI < 80\%$ (with $\text{Deviation \%}$ within $-15\%$ to $+20\%$)
+- **Optimal:** $OHI \ge 80\%$ (with $\text{Deviation \%}$ within $-15\%$ to $+20\%$)
 
 ---
 
